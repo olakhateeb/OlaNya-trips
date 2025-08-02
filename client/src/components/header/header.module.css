@@ -1,0 +1,28 @@
+/* header.module.css */
+
+:root {
+  --color-section-bg: #f2f0ed;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-section-bg);
+  padding: 15px 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.logoImg {
+  height: 70px;
+  width: auto;
+}

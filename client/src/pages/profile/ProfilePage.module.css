@@ -1,0 +1,247 @@
+/* ProfilePage.module.css */
+
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #f5f5f5;
+  --text-color: #333;
+  --error-color: #e74c3c;
+  --success-color: #2ecc71;
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
+}
+
+body {
+  font-family: 'Edu SA Hand', cursive;
+  background-color: var(--secondary-color);
+  margin: 0;
+  padding: 0;
+}
+
+.profileContainer {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profileWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.avatarContainer {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 20px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  font-size: 1.5rem;
+  color: var(--text-color);
+}
+
+.userEmail {
+  font-size: 1rem;
+  color: #777;
+}
+
+.uploadControls {
+  display: flex;
+  align-items: center;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadButton {
+  cursor: pointer;
+  background-color: #96c6c2;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: var(--border-radius);
+  margin-right: 10px;
+  transition: var(--transition);
+}
+
+.uploadButton:hover {
+  background-color: darken(#96c6c2, 10%);
+}
+
+.actionButton {
+  background-color: #96c6c2;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.actionButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.tabNav {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tabButton {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #96c6c2;
+  border-radius: var(--border-radius);
+  color: #96c6c2;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.tabButton.active {
+  background-color: #96c6c2;
+  color: white;
+}
+
+.tabContent {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  background-color: #f9f9f9;
+}
+
+.message {
+  padding: 10px;
+  border-radius: var(--border-radius);
+  margin-bottom: 20px;
+}
+
+.message.success {
+  background-color: #96c6c2;
+  color: white;
+}
+
+.message.error {
+  background-color: #96c6c2;
+  color: white;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.infoItem {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+}
+
+.infoLabel {
+  font-weight: bold;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.input, .passwordInput {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  width: 100%;
+  transition: var(--transition);
+}
+
+.passwordInputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordInput {
+  padding-right: 40px; /* Space for the eye icon */
+}
+
+.togglePasswordButton {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.togglePasswordButton:hover {
+  color: #96c6c2;
+}
+
+.togglePasswordButton:focus {
+  outline: none;
+  color: #96c6c2;
+}
+
+.input:focus {
+  border-color: #96c6c2;
+  outline: none;
+}
+
+.submitButton {
+  background-color: #96c6c2;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.submitButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #96c6c2;
+}

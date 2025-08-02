@@ -1,0 +1,231 @@
+.authContainer {
+  max-width: 420px;
+  width: 90%;
+  margin: 2rem auto;
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  background-color: #ffffff;
+  font-size: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.authContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #96c6c2, #bfdcd9);
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95em;
+  margin-bottom: 0.4rem;
+  display: block;
+  letter-spacing: 0.3px;
+}
+
+input {
+  padding: 0.85rem 1rem;
+  border: 1.5px solid #e1e5ee;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: all 0.25s ease;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #f8fafc;
+  color: #2d3748;
+}
+
+input:focus {
+  border-color: #96c6c2;
+  box-shadow: 0 0 0 3px rgba(150, 198, 194, 0.2);
+  outline: none;
+  background-color: #fff;
+}
+
+input:focus {
+  outline: none;
+  border-color: #96c6c2;
+  box-shadow: 0 0 0 2px rgba(150, 198, 194, 0.2);
+}
+
+/* Password input container */
+.passwordInputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.passwordInput {
+  padding-right: 40px !important; /* Space for the toggle button */
+  width: 100%;
+}
+
+.togglePassword {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+}
+
+.togglePassword svg {
+  width: 18px;
+  height: 18px;
+  transition: opacity 0.2s ease;
+}
+
+.togglePassword:hover {
+  color: #96c6c2;
+  background-color: #f0f9f8;
+}
+
+.togglePassword:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(150, 198, 194, 0.3);
+}
+
+/* Adjust input when there's an error */
+.errorInput {
+  padding-right: 40px !important;
+}
+
+.errorInput {
+  border-color: #e74c3c !important;
+  background-color: #fff9f9;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.errorText {
+  color: #e74c3c;
+  font-size: 0.95em;
+  margin-top: 0.4rem;
+  font-weight: 500;
+}
+
+.error {
+  color: #b91c1c;
+  background-color: #fef2f2;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  margin: 0 0 1.5rem;
+  text-align: left;
+  font-size: 0.95em;
+  border: 1px solid #fecaca;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #96c6c2, #bfdcd9);
+  color: white;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.25s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(150, 198, 194, 0.3);
+}
+
+.submitButton:hover {
+  background-color: #bfdcd9;
+}
+
+.toggleMode {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #64748b;
+  font-size: 0.95em;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  color: #96c6c2;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  font-size: 1.05em;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.toggleButton:hover {
+  color: #fff;
+  background-color: #4a90e2;
+  text-decoration: none;
+}
+
+.forgotPassword {
+  text-align: center;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.forgotPasswordButton {
+  background: none;
+  border: none;
+  color: #96c6c2;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.forgotPasswordButton:hover {
+  color: #bfdcd9;
+  background-color: #f0f9f8;
+  text-decoration: none;
+}
