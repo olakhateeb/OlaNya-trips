@@ -1,0 +1,745 @@
+/* home.module.css */
+
+.homeContainer {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 1.5rem;
+  color: #96c6c2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  font-size: 0.95rem;
+}
+
+.sectionSubtitle {
+  font-size: 1rem;
+  color: #6b6b6b;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 400;
+}
+
+.loadingContainer {
+  text-align: center;
+  padding: 3rem;
+  color: #96c6c2;
+}
+
+.loadingContainer p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.noFavoritesContainer {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 15px;
+  margin: 2rem 0;
+}
+
+.noFavoritesContainer h2 {
+  color: #96c6c2;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.noFavoritesContainer p {
+  color: #6b6b6b;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Interactive Image Accordion Styles */
+.accordionSection {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, #bfdcd9 0%, #e3e3e3 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  margin-bottom: 4rem;
+  overflow: hidden;
+  min-height: 600px;
+}
+
+.accordionContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  gap: 2rem;
+}
+
+@media (min-width: 992px) {
+  .accordionContainer {
+    flex-direction: row;
+  }
+}
+
+.accordionTextContent {
+  flex: 1;
+  text-align: center;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (min-width: 992px) {
+  .accordionTextContent {
+    text-align: right;
+    align-items: flex-end;
+  }
+}
+
+.accordionHeading {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #96c6c2;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  line-height: 1.2;
+}
+
+.accordionSubheading {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #666;
+  max-width: 500px;
+}
+
+.accordionActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.accordionSecondaryButton {
+  background: rgba(150, 198, 194, 0.1);
+  color: #96c6c2;
+  padding: 1rem 2.5rem;
+  border: 2px solid #96c6c2;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.accordionSecondaryButton:hover {
+  background: rgba(150, 198, 194, 0.2);
+  transform: translateY(-2px);
+}
+
+.accordionWrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.accordionItemsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+  height: 450px;
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+.accordionItem {
+  position: relative;
+  height: 450px;
+  border-radius: 1rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.7s ease-in-out;
+  width: 60px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.accordionItemActive {
+  width: 400px;
+}
+
+.accordionItemImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+  transition: opacity 0.3s ease;
+  will-change: transform;
+  filter: contrast(1.05) saturate(1.05);
+  -webkit-transform: translateZ(0);
+}
+
+.imageLoading {
+  opacity: 0;
+}
+
+/* Add a shimmer effect for loading images */
+/* Remove shimmer effect as requested */
+.accordionItem::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #f0f0f0;
+  z-index: -1;
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}
+
+.accordionItemOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.accordionItemTitle {
+  position: absolute;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.3s ease-in-out;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
+}
+
+.accordionItemTitleActive {
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(0);
+}
+
+@media (max-width: 768px) {
+  .accordionItemsContainer {
+    height: 350px;
+  }
+  
+  .accordionItem {
+    height: 350px;
+    width: 50px;
+  }
+  
+  .accordionItemActive {
+    width: 280px;
+  }
+  
+  .accordionHeading {
+    font-size: 2rem;
+  }
+}
+
+/* Original Hero Section - Keeping for reference */
+.heroSection {
+  position: relative;
+  height: 600px;
+  width: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+              url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  margin-bottom: 4rem;
+  display: none; /* Hide the original hero section */
+}
+
+.heroContent {
+  max-width: 800px;
+  padding: 2rem;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+}
+
+.heroSubtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2.5rem;
+  opacity: 0.9;
+}
+
+.heroActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.heroActions button {
+  min-width: 180px;
+  transition: all 0.3s ease;
+}
+
+.heroActions button:hover {
+  transform: translateY(-2px);
+}
+
+/* Features Section */
+.featuresSection {
+  background: linear-gradient(135deg, #bfdcd9 0%, #e3e3e3 100%);
+  padding: 5rem 1rem;
+  margin: 4rem 0;
+}
+
+.featuresContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #96c6c2;
+  margin-bottom: 3rem;
+  font-weight: 700;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.featureCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.featureIcon {
+  font-size: 2.5rem;
+  color: #96c6c2;
+  margin-bottom: 1.5rem;
+}
+
+.featureCard h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.featureCard p {
+  color: #666;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #96c6c2 0%, #66b2ae 100%);
+  color: white;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(150, 198, 194, 0.3);
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(150, 198, 194, 0.4);
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 1rem 2.5rem;
+  border: 2px solid white;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+
+
+.recommendationSection {
+  padding: 2.5rem 0;
+  max-width: 1200px;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 4rem;
+  background: linear-gradient(135deg, #bfdcd9 0%, #e3e3e3 100%);
+
+}
+
+.campingSection {
+  background: linear-gradient(135deg, #bfdcd9 0%, #e3e3e3 100%);
+  padding: 3rem 0;
+  border-radius: 20px;
+  margin: 2rem 0;
+  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.07);
+  position: relative;
+  overflow: hidden;
+}
+
+.campingSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 40% 40%, rgba(150, 198, 194, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.campingSection h2 {
+  font-size: 2.8rem;
+  margin-bottom: 2.5rem;
+  color: #96c6c2;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.campingSection .cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+  justify-content: center;
+  padding: 0 2.5rem;
+}
+
+.trip-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #e8e8e8;
+  height: 400px;
+}
+
+.trip-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  border-color: #d8d8d8;
+}
+
+.trip-card-image {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.trip-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.trip-card:hover .trip-card-image img {
+  transform: scale(1.08);
+}
+
+.trip-card-content {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.trip-card-title {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  color: #96c6c2;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.trip-card-description {
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.trip-card-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e8e8e8;
+}
+
+.trip-card-price {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #96c6c2;
+}
+
+.trip-card-duration {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.trip-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.star {
+  color: #ffd700;
+  font-size: 1.2rem;
+}
+
+.star.filled {
+  color: #ffd700;
+}
+
+.recommendationSection h2 {
+  font-size: 2.4rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  color: #96c6c2;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.3px;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  justify-content: center;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #e8e8e8;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  border-color: #d8d8d8;
+}
+
+.cardImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover .cardImage {
+  transform: scale(1.08);
+}
+
+.cardContent {
+  padding: 1.8rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.cardTitle {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  color: #96c6c2;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.cardDescription {
+  color: #666;
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.cardDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+}
+
+.priceTag {
+  font-weight: bold;
+  color: #96c6c2;
+  font-size: 1.1rem;
+}
+
+.duration {
+  color: #96c6c2;
+  font-size: 0.9rem;
+}
+
+.rating {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.star {
+  color: #ffd700;
+  font-size: 1.1rem;
+}
+
+
+
+.galleryContainer {
+  width: 100%;
+  height: 600px;
+  padding: 2rem;
+  margin: 2rem 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  position: relative;
+}
+
+
+
+.list {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+
+
+
+.color-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(255,0,150,0.5), rgba(0,150,255,0.5));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.contactContainer {
+  background: linear-gradient(135deg, #bfdcd9 0%, #e3e3e3 100%);
+  padding: 2rem;
+  border-radius: 15px;
+  text-align: center;
+  margin: 2rem 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  color: #96c6c2;
+}
+
+.contactContainer h3,
+.contactContainer p {
+  color: #96c6c2;
+}
+
+.contactContainer:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.contactContainer h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  
+}
+
+.contactContainer p {
+  color: #96c6c2;
+}
+
+.imageMaskSection {
+  width: 100%;
+  max-width: 1400px; /* make images larger */
+  margin: 3rem auto;
+  padding: 0; /* no background padding */
+  border-radius: 0; /* no rounded container */
+  box-shadow: none; /* no container shadow */
+  background: transparent; /* ensure no white background */
+  overflow: visible;
+  position: relative;
+}
+
+.imageMaskSection img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+
+
+/* Removed gradient overlay for clean white background */
+
+@media (max-width: 768px) {
+  .homeContainer {
+    padding: 1rem;
+  }
+
+  .recommendationSection h2 {
+    font-size: 3rem;
+    
+  }
+
+  .card {
+    min-width: 250px;
+  }
+
+  .contactContainer {
+    padding: 1.5rem;
+  }
+}

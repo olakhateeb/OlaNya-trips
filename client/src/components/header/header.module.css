@@ -1,0 +1,71 @@
+:root {
+  --color-section-bg: #f2f0ed;
+}
+
+.header {
+  direction: ltr; /* עכשיו כיוון בסיסי רגיל כי הלוגו בצד שמאל */
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* שמאל | אמצע | ימין */
+  align-items: center;
+
+  background-color: var(--color-section-bg);
+  padding-block: 12px;
+  padding-inline: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* שמאל – לוגו */
+.logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-self: start; /* שמאל */
+}
+.logoImg {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+}
+
+.nav {
+  justify-self: end;
+}
+
+/* ימין – פרופיל */
+.profile {
+  justify-self: end; /* ימין */
+}
+.profileImg {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+.profileImg:hover {
+  transform: scale(1.05);
+}
+
+/* מובייל */
+@media (max-width: 900px) {
+  .header {
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "logo profile"
+      "nav  nav";
+    row-gap: 10px;
+  }
+  .logo {
+    grid-area: logo;
+  }
+  .nav {
+    grid-area: nav;
+    justify-self: center;
+  }
+}

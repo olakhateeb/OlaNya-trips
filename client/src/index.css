@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Edu+SA+Hand:wght@400;500;600;700&display=swap");
+
+* {
+  font-family: "Edu SA Hand", cursive;
+}
+body {
+  font-family: "Edu SA Hand", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+h1,
+h2,
+h3 {
+  font-weight: 700; /* כותרות עבות */
+}
+
+p,
+span,
+li {
+  font-weight: 400; /* טקסט רגיל */
+}
+
+/* code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+} */

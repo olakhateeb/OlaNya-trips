@@ -1,0 +1,244 @@
+.navbar {
+  width: 100%;
+  padding: 0 2rem;
+  direction: rtl; /* חשוב */
+  position: relative;
+  display: flex; /* מאפשר לדחוף את התוכן לימין */
+  justify-content: flex-end; /* מצמיד את ה-container לקצה ימין */
+}
+
+.navContainer {
+  display: flex;
+  flex-direction: row-reverse; /* הרשימה מימין, פרופיל משמאל */
+  align-items: center;
+  justify-content: flex-start; /* הכל מתחיל מהימין */
+  gap: 2rem;
+
+  width: auto;
+  max-width: none;
+  margin-left: auto;
+  margin-right: 0;
+
+  padding: 0.5rem 0;
+}
+
+.navList {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-end; /* גם הרשימה לימין */
+}
+
+.navItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.navLink:hover,
+.navLinkActive {
+  color: #96c6c2;
+  background-color: rgba(150, 198, 194, 0.12);
+}
+
+/* אייקונים של הניווט */
+.navIcon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+/* אזור התחברות/פרופיל (שמאל) */
+.authSection {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+/* קישורי התחברות */
+.authLinks {
+  display: flex;
+  align-items: center;
+}
+
+.authLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background-color: #f8f9fa;
+  border: 1px solid #e1e4e8;
+  transition: all 0.2s ease;
+}
+.authLink:hover,
+.authLinkActive {
+  background-color: #f0f9f8;
+  color: #96c6c2;
+  border-color: #bfdcd9;
+}
+.authIcon {
+  font-size: 1.1rem;
+}
+
+/* פרופיל */
+.profileDropdown {
+  position: relative; /* חשוב כדי שה-dropdown יהיה ממוקם יחסית לפרופיל */
+  margin-right: 20px; /* מזיז את כפתור הפרופיל קצת פנימה מהקצה הימני */
+}
+
+.profileButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px solid #e1e4e8;
+  border-radius: 20px;
+  padding: 0.4rem 0.8rem 0.4rem 0.4rem;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+.profileButton:hover {
+  background-color: #f1f3f5;
+  border-color: #ced4da;
+}
+
+.profileImage {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.profileIcon {
+  font-size: 1.8rem;
+  color: #6c757d;
+}
+
+/* תפריט נפתח – מוצמד לימין כדי לא להיחתך */
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0; /* עיגון לימין */
+  left: auto; /* ביטול העיגון לשמאל */
+  min-width: 200px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+.profileDropdown:hover .dropdownMenu,
+.profileDropdown:focus-within .dropdownMenu {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: right;
+  font-size: 0.9rem;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+.dropdownItem:hover {
+  background-color: #f8f9fa;
+  color: #4a90e2;
+}
+.dropdownIcon {
+  font-size: 1rem;
+  color: #6c757d;
+  width: 20px;
+  text-align: center;
+}
+.dropdownItem:hover .dropdownIcon {
+  color: #4a90e2;
+}
+
+/* --- התאמות נוספות --- */
+/* הזזה עדינה של כל רשימת הניווט שמאלה (פנימה מהקצה הימני) */
+.navList {
+  margin-right: 20px; /* ניתן לשנות ל-10-30px לפי הטעם */
+}
+
+/* רספונסיביות */
+@media (max-width: 992px) {
+  .navContainer {
+    gap: 1rem;
+  }
+  .navList {
+    gap: 0.75rem;
+  }
+  .navLink {
+    font-size: 0.95rem;
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.5rem;
+  }
+  .navContainer {
+    flex-direction: column; /* אנכי */
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .navList {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center; /* מרכוז תפריט במוביל */
+    margin-right: 0; /* במובייל נבטל את ההזזה */
+  }
+  .authSection {
+    justify-content: center;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e9ecef;
+  }
+  /* במובייל – למרכז את ה-dropdown מתחת לכפתור */
+  .dropdownMenu {
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -10px);
+  }
+  .profileDropdown:hover .dropdownMenu,
+  .profileDropdown:focus-within .dropdownMenu {
+    transform: translate(-50%, 0);
+  }
+}

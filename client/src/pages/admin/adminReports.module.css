@@ -1,0 +1,261 @@
+/* adminReports.module.css */
+
+/* ===== Design tokens ===== */
+:root {
+  --bg: #ffffff;
+  --muted-bg: #f7f9fa;
+  --card-border: #eeeeee;
+  --border: #e4e7eb;
+  --text: #222;
+  --text-muted: #6b7280;
+
+  --primary: #3a7bd5;
+  --primary-weak: #e8f1fd;
+
+  --accent: #00b3a4;
+  --accent-weak: #f0fbfa;
+
+  --success: #28a745;
+  --warning: #ffc107;
+}
+
+/* ===== Layout ===== */
+.container {
+  direction: rtl;
+  color: var(--text);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* ===== Controls / Filters ===== */
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.select,
+.inputDate {
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 14px;
+  min-height: 36px;
+}
+
+/* ===== Buttons (new design) ===== */
+.btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease,
+    filter 0.2s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* כפתור סינון – כחול */
+.btnFilter {
+  composes: btn;
+  background: linear-gradient(135deg, #3a7bd5, #2a5ba5);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(42, 91, 165, 0.25);
+}
+
+.btnFilter:hover {
+  filter: brightness(1.02);
+  box-shadow: 0 4px 12px rgba(42, 91, 165, 0.35);
+  transform: translateY(-1px);
+}
+
+.btnFilter:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+.btnFilter:focus-visible {
+  box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.35);
+}
+
+/* כפתור הורדת אקסל – טורקיז */
+.btnExport {
+  composes: btn;
+  background: linear-gradient(135deg, #00b3a4, #009688);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 150, 136, 0.25);
+}
+
+.btnExport:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 4px 12px rgba(0, 150, 136, 0.35);
+  transform: translateY(-1px);
+}
+
+.btnExport:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+.btnExport:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 179, 164, 0.35);
+}
+
+/* ===== Table ===== */
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.thead {
+  background: var(--muted-bg);
+}
+
+.th {
+  text-align: right;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.td {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: top;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.tr:nth-child(even) .td {
+  background: #fcfcfd;
+}
+
+/* Scrollbar */
+.tableWrap::-webkit-scrollbar {
+  height: 10px;
+}
+.tableWrap::-webkit-scrollbar-thumb {
+  background: #d4d7db;
+  border-radius: 10px;
+}
+.tableWrap::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+/* ===== Status badge ===== */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.pending {
+  border-color: rgba(255, 193, 7, 0.35);
+  background: rgba(255, 193, 7, 0.08);
+  color: #9a7a00;
+}
+.pending .statusDot {
+  background: var(--warning);
+}
+
+.completed {
+  border-color: rgba(40, 167, 69, 0.35);
+  background: rgba(40, 167, 69, 0.08);
+  color: #0f7a2b;
+}
+.completed .statusDot {
+  background: var(--success);
+}
+
+/* ===== States ===== */
+.loading,
+.empty {
+  padding: 12px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ===== Responsive tweaks ===== */
+@media (max-width: 720px) {
+  .title {
+    font-size: 18px;
+  }
+  .controls {
+    gap: 6px;
+  }
+  .select,
+  .inputDate {
+    font-size: 13px;
+  }
+  .btn,
+  .btnFilter,
+  .btnExport {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+  .th,
+  .td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}

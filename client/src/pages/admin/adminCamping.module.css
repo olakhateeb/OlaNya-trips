@@ -1,0 +1,528 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+/* הכלה: זהה ל-adminTrips.module.css (לנוחות שמרתי אותו עיצוב) */
+.container {
+  direction: rtl;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+    Arial;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 16px;
+  color: #1f2937;
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+}
+.addButton {
+  margin-inline-start: auto;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #ecf7f6;
+  border: 1px solid #d7efed;
+  color: #145a57;
+  font-weight: 600;
+  transition: 0.15s;
+}
+.addButton:hover {
+  background: #d7efed;
+  transform: translateY(-1px);
+}
+.grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 760px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1080px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.cardFrame {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+}
+.cardFigure {
+  position: relative;
+  background: #f3f4f6;
+  border-radius: 18px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+}
+.cardFigure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.figurePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #98a2b3;
+  font-size: 14px;
+}
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  transition: 0.15s;
+}
+.card:hover {
+  border-color: #d9dcdf;
+  transform: translateY(-2px);
+}
+.cardBody {
+  padding: 14px 16px;
+}
+.title {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+}
+.desc {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.55;
+  min-height: 40px;
+}
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.editBtn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f7f8fa;
+  color: #1f2937;
+  font-weight: 600;
+}
+.editBtn:hover {
+  background: #eef1f4;
+}
+
+/* Modal & sticky */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.35);
+  display: grid;
+  place-items: center;
+}
+.modal {
+  width: min(980px, 95vw);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.modalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+}
+.modalHeader h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.closeBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  color: #6b7280;
+}
+.closeBtn:hover {
+  color: #4b5563;
+}
+.error {
+  color: #b91c1c;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.modalBody {
+  overflow: auto;
+  padding: 16px;
+}
+
+.form {
+  display: block;
+}
+.formLayout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 18px;
+}
+@media (max-width: 900px) {
+  .formLayout {
+    grid-template-columns: 1fr;
+  }
+}
+.previewBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.previewFigure {
+  aspect-ratio: 16/10;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+.previewFigure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.previewPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #98a2b3;
+}
+.inputsBox {
+  display: block;
+}
+.twoCol {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 720px) {
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+}
+.spanAll {
+  grid-column: 1/-1;
+}
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #6b7280;
+}
+.input,
+.textarea,
+.fileInput {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.15s;
+}
+.input:focus,
+.textarea:focus,
+.fileInput:focus {
+  border-color: #5aa4a0;
+  box-shadow: 0 0 0 3px rgba(90, 164, 160, 0.16);
+}
+.textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+.cancelBtn,
+.saveBtn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cancelBtn {
+  border: 1px solid #e5e7eb;
+  background: #f7f8fa;
+  color: #1f2937;
+}
+.cancelBtn:hover {
+  background: #eef1f4;
+}
+.saveBtn {
+  border: 1px solid #5aa4a0;
+  background: #ecf7f6;
+  color: #145a57;
+}
+.saveBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.actionsSticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  background: linear-gradient(#ffffff, rgba(255, 255, 255, 0.94));
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Checkbox tiles */
+.checkboxGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  user-select: none;
+  padding-top: 4px;
+  width: 100%;
+}
+.checkboxLegend {
+  width: 100%;
+  font-size: 15px;
+  font-weight: 800;
+  color: #374151;
+  margin: 4px 0 6px;
+}
+.checkboxItem {
+  position: relative;
+}
+.checkboxInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.checkboxTile {
+  width: 8.2rem;
+  min-height: 7.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 14px;
+  border: 2px solid #d1d5db;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: 0.15s;
+  cursor: pointer;
+  position: relative;
+  padding: 10px;
+}
+.checkboxTile:hover {
+  border-color: #2563eb;
+  transform: translateY(-1px);
+}
+.checkboxTile::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 2px solid #cbd5e1;
+  background: #fff;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: 0.2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192' fill='%23FFFFFF' viewBox='0 0 256 256'%3E%3Cpolyline points='216 72.005 104 184 48 128.005' fill='none' stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='32'/%3E%3C/svg%3E");
+  background-size: 12px;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+.checkboxIcon {
+  font-size: 28px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(16, 24, 40, 0.1));
+}
+.checkboxLabel {
+  font-size: 13px;
+  color: #4b5563;
+  text-align: center;
+  line-height: 1.2;
+}
+.checkboxInput:checked + .checkboxTile {
+  border-color: #2563eb;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.18);
+}
+.checkboxInput:checked + .checkboxTile::before {
+  opacity: 1;
+  transform: scale(1);
+  background: #2563eb;
+  border-color: #2563eb;
+}
+.checkboxInput:focus + .checkboxTile {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.22),
+    0 6px 20px rgba(16, 24, 40, 0.08);
+}
+@media (max-width: 520px) {
+  .checkboxTile {
+    width: 46%;
+    min-width: 150px;
+  }
+}
+
+/* ==== קומפקטי לטפסים ==== */
+.compactTiles {
+  gap: 8px;
+}
+.compactTiles .checkboxTile {
+  width: 6rem;
+  min-height: 5.8rem;
+  padding: 7px;
+  border-radius: 12px;
+  gap: 4px;
+}
+.compactTiles .checkboxIcon {
+  font-size: 20px;
+}
+.compactTiles .checkboxLabel {
+  font-size: 11.5px;
+  line-height: 1.15;
+}
+.compactTiles .checkboxTile::before {
+  width: 16px;
+  height: 16px;
+  top: 6px;
+  left: 6px;
+}
+/* שמירה על שניים בעמודה בנייד */
+@media (max-width: 520px) {
+  .compactTiles .checkboxTile {
+    width: 44%;
+    min-width: 120px;
+  }
+}
+
+/* ===== Details modal (view) – כמו בטיולים ===== */
+.detailsModal {
+  width: min(920px, 95vw);
+}
+.detailsBody {
+  display: grid;
+  gap: 16px;
+}
+.detailsTop {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .detailsTop {
+    grid-template-columns: 1fr;
+  }
+}
+.detailsImage {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f3f4f6;
+  aspect-ratio: 16/10;
+}
+.detailsImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.detailsHeaderBox {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+.detailsTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+.metaGrid {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  color: #374151;
+}
+.metaKey {
+  color: #6b7280;
+  font-weight: 600;
+  margin-inline-start: 6px;
+}
+.detailsSection {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 12px;
+}
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: #374151;
+  margin-bottom: 8px;
+}
+.detailsText {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.7;
+}
+
+/* chips */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #dbe3ea;
+  background: #f7fafc;
+  color: #0f172a;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+.chipIcon {
+  font-size: 14px;
+  line-height: 1;
+}
+.chipMuted {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.detailsActionsRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
