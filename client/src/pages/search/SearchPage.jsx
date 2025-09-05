@@ -275,7 +275,7 @@ const SearchPage = () => {
               name="q"
               value={filters.q}
               onChange={handleText}
-              placeholder="שם מקום / תיאור / סוג..."
+              placeholder=""
               className={`${styles.input} ${
                 fieldErrors.q ? styles.inputError : ""
               }`}

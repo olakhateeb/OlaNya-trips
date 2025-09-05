@@ -3,7 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
+<<<<<<< HEAD
 -- Generation Time: Sep 05, 2025 at 07:52 PM
+
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -479,7 +481,11 @@ INSERT INTO `users` (`userName`, `email`, `phone`, `password`, `confirmPassword`
 ('amer', 'amer@gmail.com', '052502193', '$2b$10$N9KTlqCvEh2qig08dCKKfewowfZ2fqPZVkMW9ocRLj5lotNxCLC7C', '$2b$10$N9KTlqCvEh2qig08dCKKfewowfZ2fqPZVkMW9ocRLj5lotNxCLC7C', '213538987', 'ako', NULL, NULL, 'admin', NULL),
 ('Tasneem', 'Tasneem298@gmail.com', '052-6470280', '$2b$10$HirMqWiI.BLCM6VJM.LD/eWbfOFdYsmhq4pquzzBe8wzL/O2yx6W.', '', '214647505', 'Ein Mahel Tzafon', NULL, NULL, 'traveler', '/uploads/profileImages/214647505-1757002425895.jpg'),
 ('Aisha Aboud', 'Aisha@gmail.com', '053-7130508', '$2b$10$w2aBxJAvgPlvZOVG2F8zqOgIME3OakCu0BJS.r.LzxOGCWyS4MInu', '', '324888023', 'עילוט', NULL, NULL, 'traveler', NULL),
+<<<<<<< HEAD
 ('Ola Khateeb', 'ola.khateeb29@gmail.com', '050-2541373', '$2b$10$bdu9.vRLLEOnYUvpC/L3yOsai0jfu9vVXDLT.OjhytGdSvP6zlxNS', '$2b$10$H7B5Ij06CzmB6/0d9Z6ho.a0Vu6L6mHv2edPtBcz7rXY0s14fX8EG', '324888064', 'עילוט רחוב אלעין - ליד מעוצה מקומית', NULL, NULL, 'admin', '/uploads/profileImages/324888064-1757082256314.jpg'),
+=======
+('Ola Khateeb', 'ola.khateeb29@gmail.com', '050-2541373', '$2b$10$bdu9.vRLLEOnYUvpC/L3yOsai0jfu9vVXDLT.OjhytGdSvP6zlxNS', '$2b$10$H7B5Ij06CzmB6/0d9Z6ho.a0Vu6L6mHv2edPtBcz7rXY0s14fX8EG', '324888064', 'עילוט רחוב אלעין  ליד מעוצה מקומית', NULL, NULL, 'driver', '/uploads/profileImages/324888064-1756893143825.jpg'),
+>>>>>>> 6f47eb23c6e65a63ed60b63cd186e8915609fd7b
 ('Natan Elbat', 'Natan@gmail.com', '054-4475586', '$2b$10$v0xV.qOCrrrbJo822FlTvOeA7zB/9Y26ep8scP6icNgX2ZXztS5d.', '', '852369741', 'Esfiya ', NULL, NULL, 'driver', NULL),
 ('Ali Hanafi', 'Ali.hanafi7@gmail.com', '050-5767060', '$2b$10$NDX.Lp4zoRU6h5ckjlnpO.yoy0z0T6ud5XU/tUzcAo0mh/lydcxVy', '', '963741258', 'Nazareth Khanouq street', NULL, NULL, 'driver', 'ali.jpg');
 
