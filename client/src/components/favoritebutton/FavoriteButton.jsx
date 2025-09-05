@@ -5,7 +5,7 @@ import {
   checkFavorite,
   setRecommendation,
 } from "../../services/api";
-import styles from "./favoritebutton.module.css";
+import styles from "./favoriteButton.module.css";
 
 /**
  * props:
