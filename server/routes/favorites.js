@@ -1,152 +1,144 @@
-// const express = require('express');
-// const router = express.Router();
-// const db = require('../db');
-// const { verifyToken } = require('../middleware/auth');
+// routes/favorites.js
+const express = require("express");
+const router = express.Router();
+const db = require("../db");
+const jwt = require("jsonwebtoken");
 
-// // @route   GET /api/favorites/public
-// // @desc    Get all favorite items for public display (travelers/drivers home page)
-// // @access  Public
-// router.get('/public', async (req, res) => {
-//   try {
-//     const favorites = {
-//       trips: [],
-//       camping: [],
-//       attractions: []
-//     };
+/* ==== Auth helper ==== */
+const localVerifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization || "";
+  if (!authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ ok: false, message: "No token provided" });
+  }
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "your_jwt_secret"
+    );
+    req.user = decoded?.user || decoded; // תואם למבנה שלך
+    next();
+  } catch {
+    return res.status(401).json({ ok: false, message: "Invalid token" });
+  }
+};
 
-//     // Get favorite trips
-//     try {
-//       const [trips] = await db.query("SELECT * FROM trips WHERE is_favorite = TRUE");
-//       favorites.trips = trips;
-//     } catch (err) {
-//       console.log("No is_favorite column in trips table yet");
-//     }
+const getUserId = (req) =>
+  req?.user?.idNumber || req?.user?.id || req?.user?.userId || null;
 
-//     // Get favorite camping spots
-//     try {
-//       const [camping] = await db.query("SELECT * FROM camping WHERE is_favorite = TRUE");
-//       favorites.camping = camping;
-//     } catch (err) {
-//       console.log("No is_favorite column in camping table yet");
-//     }
+/* Helper: נרמול טיפוס הפריט (סינגולרי ולוואר-קייס) */
+const normalizeItemType = (t = "") => {
+  const k = String(t || "")
+    .trim()
+    .toLowerCase();
+  if (k === "trips") return "trip";
+  if (k === "campings") return "camping";
+  if (k === "attractions") return "attraction";
+  return k; // trip | camping | attraction
+};
 
-//     // Get favorite attractions
-//     try {
-//       const [attractions] = await db.query("SELECT * FROM attractions WHERE is_favorite = TRUE");
-//       favorites.attractions = attractions;
-//     } catch (err) {
-//       console.log("No is_favorite column in attractions table yet");
-//     }
+/* =========================
+   הוספה/הסרה של מועדף
+   ========================= */
+// on=true => להוסיף, on=false => למחוק
+router.post("/", localVerifyToken, async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    let { itemType, itemId, on } = req.body;
 
-//     res.json(favorites);
-//   } catch (err) {
-//     console.error("🔥 שגיאה בקבלת מועדפים ציבוריים:", err);
-//     res.status(500).json({ message: "Server error", error: err.message });
-//   }
-// });
+    if (!userId || typeof on === "undefined") {
+      return res.status(400).json({ ok: false, message: "Missing params" });
+    }
 
-// // @route   POST /api/favorites/toggle
-// // @desc    Toggle user favorite (add/remove)
-// // @access  Public (no auth required)
-// router.post('/toggle', async (req, res) => {
-//   try {
-//     const { userId, contentType, contentId } = req.body;
+    itemType = normalizeItemType(itemType);
+    if (!["trip", "camping", "attraction"].includes(itemType)) {
+      return res.status(400).json({ ok: false, message: "Bad itemType" });
+    }
 
-//     console.log('🔄 Toggle favorite:', { userId, contentType, contentId });
+    // מזהה נשמר תמיד כמחרוזת (תומך גם ב־VARCHAR כמו camping_location_name)
+    const itemKey = String(itemId ?? "").trim();
+    if (!itemKey) {
+      return res.status(400).json({ ok: false, message: "Bad itemId" });
+    }
 
-//     if (!userId || !contentType || !contentId) {
-//       return res.status(400).json({ error: 'Missing required fields: userId, contentType, contentId' });
-//     }
+    if (on) {
+      await db.query(
+        "INSERT IGNORE INTO favorites (user_id, item_type, item_id) VALUES (?,?,?)",
+        [userId, itemType, itemKey]
+      );
+    } else {
+      await db.query(
+        "DELETE FROM favorites WHERE user_id=? AND item_type=? AND item_id=?",
+        [userId, itemType, itemKey]
+      );
+    }
 
-//     // בדיקה אם כבר קיים במועדפים
-//     const checkQuery = 'SELECT * FROM favorites WHERE user_idNumber = ? AND content_type = ? AND content_id = ?';
-//     const [existing] = await db.query(checkQuery, [userId, contentType, contentId]);
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error("POST /api/favorites error:", e);
+    return res.status(500).json({ ok: false, message: "Server error" });
+  }
+});
 
-//     if (existing.length > 0) {
-//       // אם קיים → מחיקה
-//       const deleteQuery = 'DELETE FROM favorites WHERE user_idNumber = ? AND content_type = ? AND content_id = ?';
-//       await db.query(deleteQuery, [userId, contentType, contentId]);
-//       console.log('❌ Removed from favorites');
-//       res.json({ message: 'הוסר מהמועדפים', isFavorite: false });
-//     } else {
-//       // אם לא קיים → הוספה
-//       const insertQuery = 'INSERT INTO favorites (user_idNumber, content_type, content_id, created_at) VALUES (?, ?, ?, NOW())';
-//       await db.query(insertQuery, [userId, contentType, contentId]);
-//       console.log('✅ Added to favorites');
-//       res.json({ message: 'נוסף למועדפים', isFavorite: true });
-//     }
-//   } catch (err) {
-//     console.error('🔥 שגיאה בעדכון מועדפים:', err);
-//     res.status(500).json({ error: err.message });
-//   }
-// });
+/* =========================
+   בדיקת מצב מועדף לכרטיס
+   ========================= */
+router.get("/check", localVerifyToken, async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    let { itemType, itemId } = req.query;
 
-// // @route   GET /api/favorites/check/:userId/:contentType/:contentId
-// // @desc    Check if item is favorited by user
-// // @access  Public (no auth required since userId is in URL)
-// router.get('/check/:userId/:contentType/:contentId', async (req, res) => {
-//   try {
-//     const { userId, contentType, contentId } = req.params;
+    if (!userId) {
+      return res.status(400).json({ ok: false, message: "Missing user" });
+    }
 
-//     if (!userId || !contentType || !contentId) {
-//       return res.status(400).json({ error: 'Missing required fields' });
-//     }
+    itemType = normalizeItemType(itemType);
+    if (!["trip", "camping", "attraction"].includes(itemType)) {
+      return res.status(400).json({ ok: false, message: "Bad itemType" });
+    }
 
-//     console.log('🔍 Checking favorite:', { userId, contentType, contentId });
+    const itemKey = String(itemId ?? "").trim();
+    if (!itemKey) {
+      return res.status(400).json({ ok: false, message: "Bad itemId" });
+    }
 
-//     const checkQuery = 'SELECT * FROM favorites WHERE user_idNumber = ? AND content_type = ? AND content_id = ?';
-//     const [existing] = await db.query(checkQuery, [userId, contentType, contentId]);
+    const [rows] = await db.query(
+      "SELECT 1 FROM favorites WHERE user_id=? AND item_type=? AND item_id=? LIMIT 1",
+      [userId, itemType, itemKey]
+    );
+    return res.json({ ok: true, isFavorite: rows.length > 0 });
+  } catch (e) {
+    console.error("GET /api/favorites/check error:", e);
+    return res.status(500).json({ ok: false, message: "Server error" });
+  }
+});
 
-//     console.log('✅ Check result:', { isFavorite: existing.length > 0 });
-//     res.json({ isFavorite: existing.length > 0 });
-//   } catch (err) {
-//     console.error('🔥 שגיאה בבדיקת מועדפים:', err);
-//     res.status(500).json({ error: err.message });
-//   }
-// });
+/* =========================
+   רשימת המועדפים של המשתמש
+   ========================= */
+router.get("/my", localVerifyToken, async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(400).json({ ok: false, message: "Missing user" });
+    }
 
-// // @route   GET /api/favorites/user
-// // @desc    Get all user favorites for profile page
-// // @access  Private
-// router.get('/user', verifyToken, async (req, res) => {
-//   try {
-//     const user_idNumber = req.user.idNumber;
+    const [rows] = await db.query(
+      `SELECT 
+         item_type AS itemType, 
+         item_id   AS itemId, 
+         created_at AS createdAt
+       FROM favorites 
+       WHERE user_id=? 
+       ORDER BY created_at DESC`,
+      [userId]
+    );
 
-//     const favorites = {
-//       trips: [],
-//       camping: [],
-//       attractions: []
-//     };
+    return res.json({ ok: true, favorites: rows });
+  } catch (e) {
+    console.error("GET /api/favorites/my error:", e);
+    return res.status(500).json({ ok: false, message: "Server error" });
+  }
+});
 
-//     // Get user's favorite trips
-//     const [tripFavorites] = await db.query(`
-//       SELECT t.* FROM trips t
-//       INNER JOIN favorites f ON f.content_id = t.trip_id
-//       WHERE f.user_idNumber = ? AND f.content_type = 'trip'
-//     `, [user_idNumber]);
-//     favorites.trips = tripFavorites;
-
-//     // Get user's favorite camping spots
-//     const [campingFavorites] = await db.query(`
-//       SELECT c.* FROM camping c
-//       INNER JOIN favorites f ON f.content_id = c.camping_location_name
-//       WHERE f.user_idNumber = ? AND f.content_type = 'camping'
-//     `, [user_idNumber]);
-//     favorites.camping = campingFavorites;
-
-//     // Get user's favorite attractions
-//     const [attractionFavorites] = await db.query(`
-//       SELECT a.* FROM attractions a
-//       INNER JOIN favorites f ON f.content_id = a.attraction_id
-//       WHERE f.user_idNumber = ? AND f.content_type = 'attraction'
-//     `, [user_idNumber]);
-//     favorites.attractions = attractionFavorites;
-
-//     res.json(favorites);
-//   } catch (err) {
-//     console.error('🔥 שגיאה בקבלת מועדפי משתמש:', err);
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-// module.exports = router;
+module.exports = router;

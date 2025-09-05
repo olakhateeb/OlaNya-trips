@@ -1,3 +1,4 @@
+//forgot password.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../services/api";
@@ -7,7 +8,7 @@ import styles from "./ForgotPassword.module.css";
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);//הטופס 
+  const [isSubmitting, setIsSubmitting] = useState(false); //הטופס
   const [error, setError] = useState("");
 
   // Handle form submission

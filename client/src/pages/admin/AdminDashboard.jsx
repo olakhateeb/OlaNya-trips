@@ -1,3 +1,4 @@
+// AdminDashboard.jsx
 import React, { useState } from "react";
 import AdminTrips from "./AdminTrips";
 import AdminCamping from "./AdminCamping";

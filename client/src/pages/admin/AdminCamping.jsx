@@ -1,3 +1,4 @@
+// AdminCamping.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import {
   getCampingSpots,
@@ -87,7 +88,7 @@ const CAMP_BOOL_FIELDS = [
   "night_camping",
   "suitable_for_groups",
   "has_entry_fee",
-  "is_favorite",
+  "is_recommended",
 ];
 const CAMP_BOOL_LABELS = {
   is_accessible: "נגיש",
@@ -102,7 +103,7 @@ const CAMP_BOOL_LABELS = {
   night_camping: "קמפינג לילה",
   suitable_for_groups: "מתאים לקבוצות",
   has_entry_fee: "דמי כניסה",
-  is_favorite: "מועדף",
+  is_recommended: "מועדף",
 };
 const ICONS = {
   near_water: "💧",
@@ -116,7 +117,7 @@ const ICONS = {
   night_camping: "🌙",
   has_entry_fee: "💳",
   bbq_area: "🍖",
-  is_favorite: "⭐",
+  is_recommended: "⭐",
   is_accessible: "♿",
 };
 
@@ -141,7 +142,7 @@ const defaultCampForm = {
   night_camping: false,
   suitable_for_groups: false,
   has_entry_fee: false,
-  is_favorite: false,
+  is_recommended: false,
 };
 
 const AdminCamping = () => {

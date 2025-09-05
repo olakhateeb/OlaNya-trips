@@ -1,3 +1,4 @@
+// AdminAttractions.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import {
   getAttractions,
@@ -86,7 +87,7 @@ const ATTR_BOOL_FIELDS = [
   "suitable_for_groups",
   "has_entry_fee",
   "requires_reservation",
-  "is_favorite",
+  "is_recommended",
 ];
 
 const ATTR_BOOL_LABELS = {
@@ -100,7 +101,7 @@ const ATTR_BOOL_LABELS = {
   suitable_for_groups: "מתאים לקבוצות",
   has_entry_fee: "דמי כניסה",
   requires_reservation: "דורש הזמנה מראש",
-  is_favorite: "מועדף",
+  is_recommended: "מועדף",
 };
 
 const ICONS = {
@@ -114,7 +115,7 @@ const ICONS = {
   is_accessible: "♿",
   has_entry_fee: "💳",
   requires_reservation: "📅",
-  is_favorite: "⭐",
+  is_recommended: "⭐",
 };
 
 const defaultAttrForm = {
@@ -135,7 +136,7 @@ const defaultAttrForm = {
   suitable_for_groups: false,
   has_entry_fee: false,
   requires_reservation: false,
-  is_favorite: false,
+  is_recommended: false,
 };
 
 const AdminAttractions = () => {

@@ -1,3 +1,4 @@
+// AdminTrips.jsx
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { getTrips, createTrip, updateTrip } from "../../services/api";
 import { adminDeleteOneImage, adminDeleteImages } from "../../services/api";
@@ -82,7 +83,7 @@ const TRIP_BOOL_FIELDS = [
   "bbq_area",
   "suitable_for_groups",
   "has_entry_fee",
-  "is_favorite",
+  "is_recommended",
 ];
 const TRIP_BOOL_LABELS = {
   is_accessible: "נגיש לנכים",
@@ -96,7 +97,7 @@ const TRIP_BOOL_LABELS = {
   bbq_area: "אזור מנגל",
   suitable_for_groups: "מתאים לקבוצות",
   has_entry_fee: "דמי כניסה",
-  is_favorite: "מועדף",
+  is_recommended: "מועדף",
 };
 const ICONS = {
   has_water_activities: "💧",
@@ -110,7 +111,7 @@ const ICONS = {
   is_accessible: "♿",
   has_entry_fee: "💳",
   bbq_area: "🍖",
-  is_favorite: "⭐",
+  is_recommended: "⭐",
 };
 
 const defaultTripForm = {
@@ -134,7 +135,7 @@ const defaultTripForm = {
   bbq_area: false,
   suitable_for_groups: false,
   has_entry_fee: false,
-  is_favorite: false,
+  is_recommended: false,
 };
 
 const AdminTrips = () => {

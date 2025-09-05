@@ -1,4 +1,4 @@
-// src/pages/trips/TripDetails.jsx
+// TripDetails.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -20,21 +20,14 @@ import {
   faMountain,
 } from "@fortawesome/free-solid-svg-icons";
 
-// ✅ דומיין ה-API (ניתן להגדיר ב-.env של הפרונט)
 const API_ORIGIN = process.env.REACT_APP_API_ORIGIN || "http://localhost:5000";
 
-/** ✅ ממיר ערך מה-DB (שם קובץ / /uploads/... / URL מלא) לכתובת תמונה תקינה עם דומיין */
+/** ממיר ערך מה-DB לנתיב תמונה תקין */
 function normalizeImagePathFromDB(raw, folder = "trips") {
   if (!raw) return "";
   const first = String(raw).split(",")[0].trim();
-
-  // כבר URL מלא או data-uri
   if (/^https?:\/\//i.test(first) || first.startsWith("data:")) return first;
-
-  // אם כבר יש /uploads/ → נוסיף דומיין
   if (first.startsWith("/uploads/")) return `${API_ORIGIN}${first}`;
-
-  // רק שם קובץ → נרכיב נתיב מלא (ומסירים prefix אם קיים)
   return `${API_ORIGIN}/uploads/${folder}/${first.replace(
     /^uploads\/[^/]+\//,
     ""
@@ -42,7 +35,14 @@ function normalizeImagePathFromDB(raw, folder = "trips") {
 }
 
 function TripDetails() {
-  const { id } = useParams();
+  const params = useParams();
+  const rawId = params?.id;
+  // מזהה ממוגן
+  const id = useMemo(() => {
+    const s = String(rawId ?? "").trim();
+    return s && s.toLowerCase() !== "undefined" ? s : "";
+  }, [rawId]);
+
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -50,7 +50,7 @@ function TripDetails() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [animateSection, setAnimateSection] = useState(false);
 
-  // ✨ המשתמש המחובר עבור Reviews
+  // המשתמש המחובר עבור Reviews
   const user = useMemo(() => {
     try {
       return JSON.parse(localStorage.getItem("user") || "null");
@@ -69,20 +69,35 @@ function TripDetails() {
   }, [loading, trip]);
 
   useEffect(() => {
+    // אין id? אל תבצע קריאה
+    if (!id) {
+      setLoading(false);
+      setError("לא התקבל מזהה טיול בכתובת.");
+      return;
+    }
+    let cancelled = false;
+
     const fetchTrip = async () => {
       try {
         const res = await axios.get(`${API_ORIGIN}/api/trips/${id}`);
-        setTrip(res.data);
-        setError("");
+        if (!cancelled) {
+          setTrip(res.data);
+          setError("");
+        }
       } catch (err) {
-        setError("אירעה שגיאה בטעינת פרטי הטיול.");
-        console.error(err);
+        if (!cancelled) {
+          setError("אירעה שגיאה בטעינת פרטי הטיול.");
+          console.error(err);
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchTrip();
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   if (loading)
@@ -114,7 +129,7 @@ function TripDetails() {
       </div>
     );
 
-  // ✅ תמיכה במס׳ תמונות מופרדות בפסיקים או מערך
+  // תמיכה במס׳ תמונות מופרדות בפסיקים או מערך
   const imageNames = Array.isArray(trip.trip_img)
     ? trip.trip_img
     : trip.trip_img
@@ -127,7 +142,7 @@ function TripDetails() {
       ? `${trip.trip_description.substring(0, 150)}...`
       : trip.trip_description;
 
-  // ======= מחירים – לוגיקת חילוץ קיימת (ללא שינוי) =======
+  // ======= מחירים – לוגיקה קיימת =======
   const extractPrices = (text) => {
     if (!text) return [];
     const lines = text
@@ -193,7 +208,7 @@ function TripDetails() {
         rows.shift();
       }
       return rows;
-    } catch (e) {
+    } catch {
       return [];
     }
   };
@@ -253,7 +268,7 @@ function TripDetails() {
   const genericPriceRows = extractGenericPriceLines(trip.trip_description);
   // ======= סוף לוגיקת המחירים =======
 
-  // ✅ התאמה ל-AboutCampingSection: בניית כתובות תמונות מנורמלות
+  // נתוני תצוגה לרכיב AboutCampingSection
   const aboutCampingData = {
     camping_location_name: trip.trip_name,
     camping_description: trip.trip_description,
@@ -293,7 +308,7 @@ function TripDetails() {
         </div>
       </div>
 
-      {/* גלריית תמונות ומאפיינים (ריפרפוז) */}
+      {/* גלריית תמונות ומאפיינים */}
       <AboutCampingSection camping={aboutCampingData} showReviews={false} />
 
       <div
@@ -464,7 +479,7 @@ function TripDetails() {
         entityId={trip.trip_id}
         canWrite={!!user}
         currentUser={user?.userName}
-        isAdmin={isAdmin} // ⬅️ מאפשר מחיקת ביקורות למנהל
+        isAdmin={isAdmin}
       />
     </div>
   );

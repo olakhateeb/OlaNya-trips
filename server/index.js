@@ -55,25 +55,14 @@ app.use("/api/reviews", require("./routes/reviews"));
 
 // ===== Feature/content routes =====
 const uploadRouter = require("./routes/upload");
-
-// const favoritesRouter = require("./routes/favorites");
-
+// Favorites (user)
+const favoritesRouter = require("./routes/favorites");
+app.use("/api/favorites", favoritesRouter);
+// Recommendations (admin)
+const recommendationsRouter = require("./routes/recommendations");
+app.use("/api/recommendations", recommendationsRouter);
+// Upload images
 app.use("/api/upload", uploadRouter);
-
-// Register unified favorites router (with logging)
-// app.use(
-//   "/api/favorites",
-//   (req, res, next) => {
-//     console.log(
-//       `Favorites API request received: ${req.method} ${req.originalUrl}`
-//     );
-//     console.log("Headers:", req.headers);
-//     console.log("Query:", req.query);
-//     console.log("Body:", req.body);
-//     next();
-//   },
-//   favoritesRouter
-// );
 
 // ===== Simple test endpoints =====
 app.get("/api/test-users", async (req, res) => {

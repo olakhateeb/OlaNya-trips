@@ -1,4 +1,4 @@
-// services/api.js
+// client/src/services/api.js
 import axios from "axios";
 
 const API_URL = "http://localhost:5000/api";
@@ -6,31 +6,81 @@ const API_URL = "http://localhost:5000/api";
 export const axiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 5000,
-  headers: {}, // לא קובעים Content-Type גלובלי
+  headers: {},
 });
 
 /** Helper: לזהות FormData */
 const isFormData = (v) =>
   typeof FormData !== "undefined" && v instanceof FormData;
 
-/** === Interceptors === */
+/** =========================
+ *   Public paths (ללא Auth)
+ *  =========================
+ * משתמשים בבדיקת startsWith, לכן מספיק לרשום prefix.
+ */
+const PUBLIC_PATHS = [
+  // Auth (ציבורי)
+  "/users/login",
+  "/users/signup",
+  "/users/forgot-password",
+  "/users/verify-code",
+  "/users/reset-password",
+
+  // תוכן ציבורי
+  "/trips", // /trips, /trips/:id
+  "/trip", // תאימות אם כרטיסים מפנים ל-/trip/:id
+  "/camping", // /camping, /camping/:id, /camping/name/..., /camping/spots
+  "/camping/spots",
+  "/attractions", // /attractions, /attractions/:id
+
+  // חיפוש ציבורי וטופס קשר
+  "/search",
+  "/contact",
+];
+
+/** החזרת path נקי מתוך URL, בלי prefix של /api */
+const pathFromUrl = (url = "") => {
+  try {
+    const u = new URL(url, API_URL);
+    return u.pathname.replace(/^\/api/, "");
+  } catch {
+    return "";
+  }
+};
+
+// בודק אם הבקשה היא לנתיב ציבורי (עם/בלי מזהה בסוף)
+const isPublicUrl = (url = "") => {
+  const path = pathFromUrl(url);
+  return PUBLIC_PATHS.some((p) => path === p || path.startsWith(p + "/"));
+};
+
+/** === Request Interceptor === */
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Auth header אם יש טוקן
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    const url = config.url || "";
+    const publicReq = isPublicUrl(url);
 
-    // Content-Type: אם זה FormData – לא לשים כלום, הדפדפן יוסיף boundary
+    // אל תשימי Content-Type ידני ב-FormData
     if (isFormData(config.data)) {
       delete config.headers["Content-Type"];
       delete config.headers["content-type"];
     } else {
-      // אחרת JSON
       if (!config.headers["Content-Type"] && !config.headers["content-type"]) {
         config.headers["Content-Type"] = "application/json";
       }
+    }
+
+    // Authorization: לצרף רק לבקשות לא-ציבוריות ורק אם יש טוקן
+    if (!publicReq) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        delete config.headers.Authorization;
+      }
+    } else {
+      // נתיב ציבורי — אל תצרף Authorization בכלל
+      delete config.headers.Authorization;
     }
 
     return config;
@@ -38,16 +88,18 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+/** === Response Interceptor === */
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
-    }
+    // ⛔️ לא עושים שום redirect ל-/login
+    // ⛔️ לא מנקים טוקן אוטומטית
+    // מחזירים את השגיאה ל-UI שיציג הודעה/CTA לפי הצורך
     return Promise.reject(error);
   }
 );
+
+// ===== מכאן והלאה: השאר כמו אצלך (Users / Camping / Trips / Favorites וכו') =====
 
 /* =========================
    Users
@@ -56,10 +108,9 @@ export const signup = async (userData) => {
   console.log("Sending signup request with data:", userData);
 
   try {
-    // שולח את כל ה־userData כמו שהוא (כולל confirmPassword)
     const res = await axiosInstance.post("/users/signup", userData);
     console.log("Signup response:", res.data);
-    return res.data; // מחזיר רק את גוף התשובה
+    return res.data;
   } catch (error) {
     console.error("Signup error details:", {
       status: error.response?.status,
@@ -71,8 +122,6 @@ export const signup = async (userData) => {
         data: error.config?.data,
       },
     });
-
-    // זורק שגיאה עם הודעת השרת אם קיימת
     throw new Error(error.response?.data?.message || "Signup failed");
   }
 };
@@ -179,7 +228,6 @@ export const updateMyProfile = (userId, formData) => {
   const userData = { ...formData };
   delete userData._id;
 
-  // ודא שזה profilePicture, לא profileImage
   if (formData.profileImage && !formData.profilePicture) {
     userData.profilePicture = formData.profileImage;
     delete userData.profileImage;
@@ -241,9 +289,7 @@ export const uploadProfileImage = async (userId, file) => {
       `/users/${userId}/upload-image`,
       formData,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
         timeout: 30000,
       }
@@ -251,7 +297,6 @@ export const uploadProfileImage = async (userId, file) => {
 
     console.log("Upload successful:", response.data);
 
-    // עדכון localStorage
     if (response.data.success && response.data.imageUrl) {
       const userStr = localStorage.getItem("user");
       if (userStr) {
@@ -309,9 +354,8 @@ export const getCampingByName = async (campingName) => {
 
     console.log("Camping data received:", response.data);
 
-    // Fallback: המרה למערך תמונות אם צריך
     if (response.data && !response.data.images && response.data.camping_img) {
-      if (response.data.camping_img.includes(",")) {
+      if (String(response.data.camping_img).includes(",")) {
         response.data.images = response.data.camping_img
           .split(",")
           .map((img) => img.trim());
@@ -365,7 +409,7 @@ export const updateAttraction = async (id, formData) => {
    Trips
    ========================= */
 export const getTrips = (params = {}) =>
-  axiosInstance.get("/trips", { params }); // אפשר להשאיר ציבורי לרשימה
+  axiosInstance.get("/trips", { params }); // ציבורי לרשימה
 
 // יצירת טיול (Admin)
 export const createTrip = async (tripData) => {
@@ -389,7 +433,7 @@ export const updateTrip = async (id, updatedData) => {
   }
 };
 
-// פרטי טיול/אטרקציה (Admin) — יישור לשימוש ב-axiosInstance
+// פרטי טיול/אטרקציה (Admin)
 export const getTripDetails = async (tripId) => {
   try {
     const res = await axiosInstance.get(`/admin/trips/${tripId}`);
@@ -420,29 +464,21 @@ export const createSurpriseTrip = (travelerId) =>
    Admin
    ========================= */
 /* ========= Users ========= */
-
 export async function getAllUsers() {
   const res = await axiosInstance.get("/admin/users");
-  // ה-AdminUsers.jsx מצפה למערך נטו:
   return Array.isArray(res.data)
     ? res.data
     : Array.isArray(res.data?.data)
     ? res.data.data
     : [];
-  // מחזיר מערך של משתמשים
-  // const res = await axiosInstance.get("/admin/users");
-  // const data = res?.data;
-  // return Array.isArray(data) ? data : [];
 }
 
 export async function getUserDetails(idNumber) {
-  // מחזיר אובייקט משתמש בודד
   const res = await axiosInstance.get(`/admin/users/${idNumber}`);
   return res?.data || null;
 }
 
 export async function updateUserRole(idNumber, role) {
-  // עדכון תפקיד
   const res = await axiosInstance.put(`/admin/users/${idNumber}/role`, {
     role,
   });
@@ -459,88 +495,6 @@ export async function exportOrdersReport(params = {}) {
     responseType: "blob",
   });
 }
-
-/* =========================
-   Favorites
-   ========================= */
-export const getUserFavorites = async (userId) => {
-  try {
-    console.log(`Fetching favorites for user ${userId}`);
-    const response = await axiosInstance.get(`/favorites/user/${userId}`);
-    console.log("User favorites response:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error(
-      "Error fetching user favorites:",
-      error.response?.data || error.message
-    );
-    throw error;
-  }
-};
-
-export const removeFavorite = async ({ userId, contentType, contentId }) => {
-  try {
-    console.log(
-      `Removing favorite: ${contentType} ${contentId} for user ${userId}`
-    );
-    const response = await axiosInstance.post("/favorites/toggle", {
-      userId,
-      contentType,
-      contentId,
-    });
-    console.log("Remove favorite response:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error(
-      "Error removing favorite:",
-      error.response?.data || error.message
-    );
-    throw error;
-  }
-};
-
-export const toggleFavorite = async (itemId, itemType, isFavorite) => {
-  try {
-    console.log("🌟 API: Toggling favorite:", { itemId, itemType, isFavorite });
-    const response = await axiosInstance.post("/admin/favorites", {
-      itemId,
-      itemType,
-      isFavorite,
-    });
-    console.log("✅ API: Favorite toggled:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("❌ API: Error toggling favorite:", error);
-    throw error;
-  }
-};
-
-export const getFavorites = async () => {
-  try {
-    console.log("🔍 API: Fetching favorites...");
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const response = await axiosInstance.get(
-      `/favorites/user/${user.id || user.idNumber}`
-    );
-    console.log("✅ API: Favorites fetched:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("❌ API: Error fetching favorites:", error);
-    throw error;
-  }
-};
-
-export const getFavoritesForHomePage = async () => {
-  try {
-    console.log("🔍 API: Fetching favorites for home page...");
-    const response = await axiosInstance.get("/favorites/public");
-    console.log("✅ API: Public favorites fetched:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("❌ API: Error fetching public favorites:", error);
-    throw error;
-  }
-};
 
 /* =========================
    Reviews
@@ -618,7 +572,6 @@ export const searchAll = async (rawFilters = {}, limit = 50) => {
     "bbq_area",
     "suitable_for_groups",
     "has_entry_fee",
-    // "night_camping",
   ];
   boolKeys.forEach((k) => {
     if (rawFilters[k] === true) payload[k] = true;
@@ -657,14 +610,13 @@ export const getUserActivityReports = async () => {
 // === Reviews (admin) ===
 export async function adminDeleteReview(entityType, reviewId) {
   if (!reviewId) throw new Error("Missing reviewId");
-  // אין /api בתחילת הנתיב כי baseURL כבר על /api
   const res = await axiosInstance.delete(
     `/reviews/${entityType}/admin/${reviewId}`
   );
   return res.data;
 }
 
-// מחיקה בודדת (כבר יש לך):
+// מחיקה בודדת
 export async function adminDeleteOneImage(entity, id, token, keepFile = false) {
   const url = `/admin/${entity}/${encodeURIComponent(
     id
@@ -675,7 +627,7 @@ export async function adminDeleteOneImage(entity, id, token, keepFile = false) {
   return res.data;
 }
 
-// ✅ חדש: מחיקה מרובה
+// ✅ מחיקה מרובה
 export async function adminDeleteImages(entity, id, tokens, keepFile = false) {
   const url = `/admin/${entity}/${encodeURIComponent(
     id
@@ -683,3 +635,109 @@ export async function adminDeleteImages(entity, id, tokens, keepFile = false) {
   const res = await axiosInstance.post(url, { tokens });
   return res.data;
 }
+
+/* =========================
+   Favorites
+   ========================= */
+export async function toggleFavorite({ itemType, itemId, on }) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return { success: false, message: "צריך להתחבר כדי לשמור מועדפים" };
+  }
+  const res = await axiosInstance.post("/favorites", { itemType, itemId, on });
+  return res.data;
+}
+
+export async function checkFavorite({ itemType, itemId }) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return { isFavorite: false };
+  }
+  const res = await axiosInstance.get("/favorites/check", {
+    params: { itemType, itemId },
+  });
+  return res.data;
+}
+
+export async function getMyFavorites() {
+  const token = localStorage.getItem("token");
+  if (!token) return { favorites: [] };
+  const res = await axiosInstance.get("/favorites/my");
+  return res.data;
+}
+
+/* =========================
+   Recommendations (admin)
+   ========================= */
+export async function setRecommendation({ itemType, itemId, recommended }) {
+  const res = await axiosInstance.put("/recommendations", {
+    itemType,
+    itemId,
+    recommended,
+  });
+  return res.data;
+}
+
+export const getRecommendedTrips = async () => {
+  const r = await axiosInstance.get("/trips", {
+    params: { is_recommended: 1 },
+  });
+  const data = r.data;
+  return Array.isArray(data) ? data : data.trips || [];
+};
+
+export const getRecommendedCamping = async () => {
+  const r = await axiosInstance.get("/camping", {
+    params: { is_recommended: 1 },
+  });
+  return Array.isArray(r.data) ? r.data : r.data?.rows || [];
+};
+
+export const getRecommendedAttractions = async () => {
+  const r = await axiosInstance.get("/attractions", {
+    params: { is_recommended: 1 },
+  });
+  return Array.isArray(r.data) ? r.data : r.data?.rows || [];
+};
+
+/* =========================
+   Driver (נהג)
+   ========================= */
+
+// פרופיל נהג (מציג גם סיכומי הזמנות/משכורת)
+export const getDriverProfileApi = async () => {
+  const res = await axiosInstance.get("/driver/profile");
+  return res?.data?.driver || res?.data || {};
+};
+
+// טיולים מתוכננים לנהג
+export const getDriverUpcomingTrips = async () => {
+  const res = await axiosInstance.get("/driver/trips/upcoming");
+  return Array.isArray(res.data?.trips) ? res.data.trips : [];
+};
+
+// היסטוריית טיולים (כולל הושלמו/בוטלו)
+export const getDriverTripsHistory = async () => {
+  const res = await axiosInstance.get("/driver/trips/history");
+  return Array.isArray(res.data?.trips) ? res.data.trips : [];
+};
+
+// יצוא לאקסל לפי טאאב: 'upcoming' או 'history'
+export const exportDriverTrips = async (type = "upcoming") => {
+  return axiosInstance.get("/driver/trips/export", {
+    params: { type },
+    responseType: "blob",
+  });
+};
+
+// עדכון סטטוס הזמנה עבור נהג
+// status ∈ {'pending','completed','declined','cancelled'}
+// extra => { cancelled_by, cancelled_reason } (אופציונלי)
+export const updateDriverOrderStatus = async (orderId, status, extra = {}) => {
+  const payload = { status, ...extra };
+  const res = await axiosInstance.put(
+    `/driver/order-status/${orderId}`,
+    payload
+  );
+  return res.data;
+};

@@ -1,13 +1,22 @@
 //Src/client/src/pages/profile/ProfilePage.jsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   updateMyProfile, // עדכון פרטי המשתמש (ללא תמונה)
   updatePassword, // עדכון סיסמה
   uploadProfileImage, // העלאת תמונת פרופיל (FormData)
+  getMyFavorites, // ✔ למשיכת המועדפים
+  toggleFavorite, // ✔ להוספה/הסרה של מועדף
+  getAttractionById, // ✔ פרטי אטרקציה
+  getCampingByName, // ✔ פרטי קמפינג לפי שם
+  axiosInstance, // ✔ לשימוש נקודתי בפרטי טיול
 } from "../../services/api";
-import Favorites from "../../components/favorites/Favorites";
+
+import TripsCard from "../../components/tripsCard/TripsCard";
+import AttractionCard from "../../components/attractionCard/AttractionCard";
+import CampingCard from "../../components/campingCard/CampingCard";
+
 import styles from "./ProfilePage.module.css";
 
 /* ===== Helpers ===== */
@@ -26,11 +35,70 @@ const normalizeProfileUrl = (raw) => {
 // מאחד שמות אפשריים (profilePicture / profileImage)
 const pickProfile = (u = {}) => u.profilePicture || u.profileImage || "";
 
-/* ===== Component ===== */
+/** עוזר קטן: קביעה אם המשתמש הוא אדמין */
+const useIsAdmin = () => {
+  return useMemo(() => {
+    try {
+      const u = JSON.parse(localStorage.getItem("user") || "{}");
+      return String(u?.role || "").toLowerCase() === "admin";
+    } catch {
+      return false;
+    }
+  }, []);
+};
+
+/** טעינת פרטי טיול (ניסיון דרך admin, ואם נכשל — נחזיר אובייקט מינימלי) */
+async function fetchTripDetailsSafe(id) {
+  const normalize = (x) => {
+    if (!x) return null;
+    const t = x.trip || x.data?.trip || x.data || x; // תופס את רוב הצורות
+    if (!t) return null;
+    return {
+      trip_id: t.trip_id ?? t.id ?? id,
+      trip_name: t.trip_name ?? t.name ?? `טיול #${id}`,
+      trip_img: t.trip_img ?? t.img ?? t.image ?? "",
+      location: t.location || t.region || "",
+      created_at: t.created_at || t.createdAt || null,
+      is_recommended: t.is_recommended ?? t.recommended ?? 0,
+    };
+  };
+
+  // 1) ניסיון אדמין
+  try {
+    const r1 = await axiosInstance.get(`/admin/trips/${id}`);
+    const n1 = normalize(r1.data);
+    if (n1) return n1;
+  } catch {}
+
+  // 2) ניסיון ציבורי לפי id
+  try {
+    const r2 = await axiosInstance.get(`/trips/${id}`);
+    const n2 = normalize(r2.data);
+    if (n2) return n2;
+  } catch {}
+
+  // 3) גיבוי: משיכה של כל הטיולים וחיפוש לפי id
+  try {
+    const r3 = await axiosInstance.get(`/trips`);
+    const list = Array.isArray(r3.data?.data)
+      ? r3.data.data
+      : Array.isArray(r3.data)
+      ? r3.data
+      : [];
+    const found = list.find(
+      (row) => Number(row.trip_id ?? row.id) === Number(id)
+    );
+    const n3 = normalize(found);
+    if (n3) return n3;
+  } catch {}
+
+  // 4) fallback – אם הכול נכשל
+  return { trip_id: id, trip_name: `טיול #${id}`, trip_img: "" };
+}
+
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [user, setUser] = useState(null);
-  const [canShowFavorites, setCanShowFavorites] = useState(false);
 
   // טופס עריכת פרופיל (בלי תמונה)
   const [formData, setFormData] = useState({
@@ -57,7 +125,13 @@ const ProfilePage = () => {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [isLoading, setIsLoading] = useState(false);
 
+  // ===== Favorites state =====
+  const [favLoading, setFavLoading] = useState(false);
+  const [favError, setFavError] = useState("");
+  const [favItems, setFavItems] = useState([]); // אוסף פריטים מנורמלים לתצוגה
+
   const navigate = useNavigate();
+  const isAdmin = useIsAdmin();
 
   const togglePasswordVisibility = (field) =>
     setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -77,11 +151,9 @@ const ProfilePage = () => {
         if (storedUser) {
           const userData = JSON.parse(storedUser);
 
-          // normalize id
           if (!userData._id && userData.idNumber)
             userData._id = userData.idNumber;
 
-          // איחוד תמונה לשני השדות לתאימות קדימה/אחורה
           const pic = pickProfile(userData);
           if (pic) {
             userData.profilePicture = pic;
@@ -89,9 +161,6 @@ const ProfilePage = () => {
           }
 
           setUser(userData);
-
-          const role = String(userData.role || "").toLowerCase();
-          setCanShowFavorites(role === "traveler" || role === "driver");
 
           setFormData({
             userName: userData.userName || "",
@@ -110,7 +179,6 @@ const ProfilePage = () => {
 
     loadUserData();
 
-    // האזן לאירוע מותאם ולאירוע storage לטאבים/קומפ' אחרות
     const onUserUpdated = () => {
       const storedUser = localStorage.getItem("user");
       if (storedUser) setUser(JSON.parse(storedUser));
@@ -126,6 +194,96 @@ const ProfilePage = () => {
       window.removeEventListener("storage", onStorage);
     };
   }, [navigate]);
+
+  // ===== Favorites: טעינה כאשר נכנסים לטאב "favorites" =====
+  useEffect(() => {
+    if (activeTab !== "favorites") return;
+
+    let ignore = false;
+    (async () => {
+      setFavLoading(true);
+      setFavError("");
+      setFavItems([]);
+
+      try {
+        const res = await getMyFavorites();
+        const rows = res?.favorites || [];
+
+        // נטען פרטי כל פריט לפי סוגו
+        const details = await Promise.all(
+          rows.map(async (row) => {
+            const type = String(row.itemType || "").toLowerCase(); // 'trip' | 'camping' | 'attraction'
+            const rawId = row.itemId;
+
+            try {
+              if (type === "camping") {
+                // itemId הוא שם הקמפינג
+                const data = await getCampingByName(rawId);
+                return { type, rawId, data };
+              }
+              if (type === "attraction") {
+                const idNum = Number(rawId);
+                const data = await getAttractionById(idNum);
+                return { type, rawId: idNum, data };
+              }
+              if (type === "trip") {
+                const idNum = Number(rawId);
+                const data = await fetchTripDetailsSafe(idNum);
+                return { type, rawId: idNum, data };
+              }
+              // לא מזוהה — נחזיר מבנה בסיסי
+              return { type, rawId, data: null, error: "Unsupported type" };
+            } catch (e) {
+              console.warn("Failed loading favorite details:", row, e);
+              return {
+                type,
+                rawId,
+                data: null,
+                error: e?.message || "Load error",
+              };
+            }
+          })
+        );
+
+        if (!ignore) setFavItems(details);
+      } catch (e) {
+        if (!ignore) setFavError(e?.message || "Failed loading favorites");
+      } finally {
+        if (!ignore) setFavLoading(false);
+      }
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [activeTab]);
+
+  // הסרת פריט מהרשימה והמועדפים
+  const handleRemoveFavorite = async (type, rawId, itemRef) => {
+    try {
+      // Apply animation before removing
+      if (itemRef && itemRef.current) {
+        itemRef.current.style.animation = `${styles.removeAnimation} 0.5s forwards`;
+        // Wait for animation to complete
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+
+      await toggleFavorite({ itemType: type, itemId: rawId, on: false });
+      setFavItems((prev) =>
+        prev.filter(
+          (x) => !(x.type === type && String(x.rawId) === String(rawId))
+        )
+      );
+    } catch (e) {
+      setMessage({
+        text:
+          e?.response?.data?.message ||
+          e?.message ||
+          "Failed to remove favorite",
+        type: "error",
+      });
+    }
+  };
 
   // Logout
   const handleLogout = () => {
@@ -146,7 +304,7 @@ const ProfilePage = () => {
     setPasswords((prev) => ({ ...prev, [name]: value }));
   };
 
-  // העלאת תמונת פרופיל (FormData)
+  // העלאת תמונת פרופיל
   const handleImageUpload = async () => {
     if (!file) {
       setMessage({ text: "Please select an image first", type: "error" });
@@ -174,12 +332,10 @@ const ProfilePage = () => {
       setMessage({ text: "", type: "" });
 
       const res = await uploadProfileImage(userId, file);
-      // תעדוף מפתחות אפשריים מהשרת
       const serverUrl =
         res.data?.imageUrl || res.data?.profilePicture || res.data?.url || "";
 
       if (res.data?.success && serverUrl) {
-        // נשמור גם profilePicture וגם profileImage (תאימות לאחור)
         const updatedUser = {
           ...storedUser,
           profilePicture: serverUrl,
@@ -189,8 +345,6 @@ const ProfilePage = () => {
 
         setUser(updatedUser);
         localStorage.setItem("user", JSON.stringify(updatedUser));
-
-        // ליידע את ה-Header/NavBar להתעדכן
         window.dispatchEvent(new Event("user:updated"));
 
         setMessage({
@@ -229,9 +383,7 @@ const ProfilePage = () => {
     }
 
     try {
-      // אל תשלחי profileImage/ProfilePicture בטופס רגיל
       const { profileImage, profilePicture, ...safePayload } = formData;
-
       const response = await updateMyProfile(userId, safePayload);
 
       let updatedUser;
@@ -241,7 +393,6 @@ const ProfilePage = () => {
         updatedUser = { ...user, ...safePayload };
       }
 
-      // שימור תמונה קיימת אם השרת לא החזיר אותה
       const currentPic = pickProfile(user);
       if (
         currentPic &&
@@ -320,7 +471,6 @@ const ProfilePage = () => {
               alt={user?.userName}
               className={styles.avatar}
               onError={(e) => {
-                // fallback חד־פעמי אם התמונה מהשרת שבורה
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = DEFAULT_AVATAR;
               }}
@@ -380,16 +530,16 @@ const ProfilePage = () => {
           >
             <i className="fas fa-key"></i> Change Password
           </button>
-          {canShowFavorites && (
-            <button
-              className={`${styles.tabButton} ${
-                activeTab === "favorites" ? styles.active : ""
-              }`}
-              onClick={() => setActiveTab("favorites")}
-            >
-              <i className="fas fa-heart"></i> favorites
-            </button>
-          )}
+
+          {/* ✔ טאב מועדפים חדש */}
+          <button
+            className={`${styles.tabButton} ${
+              activeTab === "favorites" ? styles.active : ""
+            }`}
+            onClick={() => setActiveTab("favorites")}
+          >
+            <i className="fas fa-heart"></i> Favorites
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -586,10 +736,109 @@ const ProfilePage = () => {
             </form>
           )}
 
-          {activeTab === "favorites" && canShowFavorites && (
+          {/* ✔ Favorites Tab */}
+          {activeTab === "favorites" && (
             <div className={styles.favoritesSection}>
-              <h2>המועדפים שלי</h2>
-              {user && <Favorites userId={user.idNumber || user._id} />}
+              <h2>My Favorites</h2>
+
+              {favLoading && (
+                <div className={styles.loading}>Loading favorites…</div>
+              )}
+              {favError && (
+                <div className={`${styles.message} ${styles.error}`}>
+                  <i className="fas fa-exclamation-circle"></i>
+                  <span>{favError}</span>
+                </div>
+              )}
+
+              {!favLoading && !favError && favItems.length === 0 && (
+                <div className={styles.empty}>
+                  <i className="far fa-heart"></i>
+                  <p>No favorites yet.</p>
+                </div>
+              )}
+
+              <div className={styles.favoritesGrid}>
+                {favItems.map((f, idx) => {
+                  const key = `${f.type}-${f.rawId}-${idx}`;
+
+                  // עטיפה עם כפתור "הסר"
+                  const Wrapper = ({ children }) => {
+                    const itemRef = React.useRef(null);
+                    return (
+                      <div className={styles.favoriteItem} ref={itemRef}>
+                        <button
+                          title="Remove from favorites"
+                          onClick={() =>
+                            handleRemoveFavorite(f.type, f.rawId, itemRef)
+                          }
+                          className={styles.removeButton}
+                        >
+                          <i className="fas fa-times"></i>
+                        </button>
+                        {children}
+                      </div>
+                    );
+                  };
+
+                  // הצגת כרטיס לפי סוג
+                  if (f.type === "trip") {
+                    const t = f.data || {};
+                    return (
+                      <Wrapper key={key}>
+                        <TripsCard
+                          trip_id={t.trip_id ?? f.rawId}
+                          trip_name={t.trip_name}
+                          trip_img={t.trip_img}
+                          location={t.location}
+                          created_at={t.created_at}
+                          is_recommended={t.is_recommended}
+                        />
+                      </Wrapper>
+                    );
+                  }
+
+                  if (f.type === "attraction") {
+                    const a = f.data || {};
+                    return (
+                      <Wrapper key={key}>
+                        <AttractionCard
+                          attraction_id={a.attraction_id ?? f.rawId}
+                          attraction_name={a.attraction_name}
+                          attraction_img={a.attraction_img}
+                          location={a.location}
+                          images={a.images}
+                          is_recommended={a.is_recommended}
+                        />
+                      </Wrapper>
+                    );
+                  }
+
+                  if (f.type === "camping") {
+                    const c = f.data || {};
+                    return (
+                      <Wrapper key={key}>
+                        <CampingCard
+                          camping_location_name={
+                            c.camping_location_name ?? String(f.rawId)
+                          }
+                          camping_img={c.camping_img}
+                          images={c.images}
+                          region={c.region}
+                          is_recommended={c.is_recommended}
+                        />
+                      </Wrapper>
+                    );
+                  }
+
+                  // fallback
+                  return (
+                    <div key={key} className={styles.infoItem}>
+                      {f.type} — {String(f.rawId)}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

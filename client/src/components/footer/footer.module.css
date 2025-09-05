@@ -4,6 +4,8 @@
   padding: 3rem 2rem 1rem;
   width: 100%;
   margin-top: auto;
+  direction: rtl; /* ✅ RTL */
+  text-align: right; /* ✅ יישור טקסט לימין */
 }
 
 .footerContent {
@@ -32,9 +34,11 @@
   margin-bottom: 1.25rem;
 }
 
+/* ====== Social ====== */
 .socialLinks {
   display: flex;
   gap: 1rem;
+  justify-content: flex-start; /* ב-RTL זה עדיין יעמוד מימין לשמאל */
 }
 
 .socialLink {
@@ -48,19 +52,11 @@
   color: #96c6c2;
   transition: all 0.3s ease;
   font-size: 1.25rem;
-}
-
-.socialLink:hover {
-  transform: translateY(-3px);
- 
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .socialIcon {
   transition: transform 0.3s ease;
-}
-
-.socialLink:hover .socialIcon {
-  transform: scale(1.1);
 }
 
 .socialLink:hover {
@@ -69,36 +65,61 @@
   transform: translateY(-3px);
 }
 
+.socialLink:hover .socialIcon {
+  transform: scale(1.1);
+}
+
+/* ====== Quick Links (אייקונים במקום טקסט) ====== */
 .footerLinks {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex; /* כדי להציג אותם בשורה/רשת */
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
 }
 
 .footerLinks li {
-  margin-bottom: 0.75rem;
+  margin: 0; /* אין צורך ב-margin אנכי */
 }
 
 .footerLink {
   color: #333;
   text-decoration: none;
-  transition: color 0.3s;
-  display: inline-block;
+  transition: color 0.3s, transform 0.3s, background-color 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .footerLink:hover {
-  color: #96c6c2;
-  transform: translateX(5px);
+  color: white;
+  background-color: #96c6c2;
+  transform: translateY(-3px);
 }
 
+/* הטיית כיוון ה-hover לקישורי טקסט (אם תשולבנה בעתיד) */
+.footerLinkText:hover {
+  color: #96c6c2;
+  transform: translateX(-5px); /* ✅ RTL: זז שמאלה במקום ימינה */
+}
+
+/* ====== Contact ====== */
 .contactInfo p {
   margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   color: #333;
+  justify-content: flex-end; /* מספרי טלפון/אימייל יפה בשורה מימין */
 }
 
+/* ====== Newsletter (אם תוסיפי בעתיד) ====== */
 .newsletterForm {
   display: flex;
   flex-direction: column;
@@ -127,6 +148,7 @@
   background-color: #bfdcd9;
 }
 
+/* ====== Bottom ====== */
 .footerBottom {
   max-width: 1200px;
   margin: 2rem auto 0;
@@ -134,7 +156,7 @@
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-between; /* שומר ריווח נכון ב-RTL */
   align-items: center;
   gap: 1rem;
 }
@@ -160,6 +182,7 @@
   color: #96c6c2;
 }
 
+/* ====== Responsive ====== */
 @media (max-width: 768px) {
   .footerContent {
     flex-direction: column;
@@ -173,5 +196,9 @@
   .footerBottom {
     flex-direction: column;
     text-align: center;
+  }
+
+  .contactInfo p {
+    justify-content: center;
   }
 }

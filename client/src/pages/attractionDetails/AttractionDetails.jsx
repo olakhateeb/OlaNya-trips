@@ -63,6 +63,8 @@ function safeUrl(u) {
 
 const AttractionDetails = () => {
   const { id } = useParams();
+  console.log("AttractionDetails useParams id =", id);
+
   const [attraction, setAttraction] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -79,8 +81,14 @@ const AttractionDetails = () => {
   const currentUser = user?.userName || user?.username || user?.email || null;
   const isAdmin = String(user?.role || "").toLowerCase() === "admin";
 
-  //טעינת מידע מהשרת
+  // טעינת מידע מהשרת (כולל הגנה על id חסר)
   useEffect(() => {
+    if (!id) {
+      setError("אטרקציה לא נמצאה");
+      setLoading(false);
+      return;
+    }
+
     const fetchAttraction = async () => {
       try {
         setLoading(true);
@@ -99,7 +107,6 @@ const AttractionDetails = () => {
   }, [id]);
 
   /* ============================
-     ❗ hooks לפני כל return מוקדם
      בניית מערך תמונות באופן חסין
   ============================ */
   const allImages = useMemo(() => {
@@ -133,7 +140,7 @@ const AttractionDetails = () => {
 
   const mainImage = allImages[safeIndex] || PLACEHOLDER;
 
-  // אחרי שכל ה-hooks הוגדרו — עכשיו מותר להחזיר מוקדם
+  // מצבים מוקדמים
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -388,33 +395,6 @@ const AttractionDetails = () => {
               </div>
             </div>
           </div>
-
-          {/* Tips Card */}
-          <div className={styles.card}>
-            <h2 className={styles.cardTitle}>
-              <FontAwesomeIcon icon={faHeart} className={styles.titleIcon} />
-              טיפים מאיתנו
-            </h2>
-            <div className={styles.cardContent}>
-              <div className={styles.tipsList}>
-                {[
-                  { icon: faSun, text: "בקיץ עדיף בוקר/ערב" },
-                  { icon: faWater, text: "להביא מספיק מים" },
-                  { icon: faMapSigns, text: "בדקו מפה בכניסה" },
-                ].map((tip, index) => (
-                  <div key={index} className={styles.tipItem}>
-                    <div className={styles.tipIconWrapper}>
-                      <FontAwesomeIcon
-                        icon={tip.icon}
-                        className={styles.tipIcon}
-                      />
-                    </div>
-                    <span className={styles.tipText}>{tip.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -424,7 +404,7 @@ const AttractionDetails = () => {
         entityId={attraction.attraction_id || attraction._id || id}
         canWrite={!!user}
         currentUser={currentUser}
-        isAdmin={isAdmin} // ✅ מאפשר למנהל מחיקת כל ביקורת
+        isAdmin={isAdmin}
       />
 
       {/* Back Button */}

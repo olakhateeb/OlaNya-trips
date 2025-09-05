@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// src/pages/auth/Auth.jsx
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup, login } from "../../services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,11 +7,10 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import classes from "./Auth.module.css";
 
 /**
- * function for login and signup
- * @returns
+ * Login / Register component
  */
-const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+const Auth = ({ isLogin: isLoginProp = true }) => {
+  const [isLogin, setIsLogin] = useState(isLoginProp);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -26,13 +26,15 @@ const Auth = () => {
   const [apiError, setApiError] = useState("");
   const navigate = useNavigate();
 
-  /** ולידציה לטופס */
+  // עדכון מצב בהתאם לפרופס (כשלוחצים על Register)
+  useEffect(() => {
+    setIsLogin(isLoginProp);
+  }, [isLoginProp]);
+
+  /** ולידציה */
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.userName.trim()) {
-      newErrors.userName = "Username is required";
-    }
+    if (!formData.userName.trim()) newErrors.userName = "Username is required";
 
     if (!formData.password) {
       newErrors.password = "Password is required";
@@ -47,23 +49,13 @@ const Auth = () => {
     }
 
     if (!isLogin) {
-      if (!formData.email) {
-        newErrors.email = "Email is required";
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      if (!formData.email) newErrors.email = "Email is required";
+      else if (!/\S+@\S+\.\S+/.test(formData.email))
         newErrors.email = "Email is invalid";
-      }
 
-      if (!formData.phone) {
-        newErrors.phone = "Phone number is required";
-      }
-
-      if (!formData.idNumber) {
-        newErrors.idNumber = "ID number is required";
-      }
-
-      if (!formData.address) {
-        newErrors.address = "Address is required";
-      }
+      if (!formData.phone) newErrors.phone = "Phone number is required";
+      if (!formData.idNumber) newErrors.idNumber = "ID number is required";
+      if (!formData.address) newErrors.address = "Address is required";
 
       if (formData.password !== formData.confirmPassword) {
         newErrors.confirmPassword = "Passwords do not match";
@@ -77,22 +69,17 @@ const Auth = () => {
   /** שינוי שדות */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   /** שליחה */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError("");
-
     if (!validateForm()) return;
 
     try {
       if (!isLogin) {
-        // הרשמה
         const data = await signup(formData);
         if (data.success) {
           setApiError("Registration successful! Please log in.");
@@ -104,13 +91,11 @@ const Auth = () => {
           }));
         }
       } else {
-        // התחברות
         const response = await login({
           userName: formData.userName,
           password: formData.password,
         });
 
-        console.log("Login response:", response.data);
         if (response.data.token && response.data.user) {
           localStorage.setItem("token", response.data.token);
 
@@ -126,29 +111,22 @@ const Auth = () => {
             phone: response.data.user.phone,
             address: response.data.user.address,
             role: response.data.user.role,
-            profilePicture: picture, // שם השדה האמיתי במסד
-            profileImage: picture, // לשמירת תאימות לאחור
+            profilePicture: picture,
+            profileImage: picture,
           };
 
-          console.log("Storing user data:", userData);
           localStorage.setItem("user", JSON.stringify(userData));
 
-          if (userData.role === "admin") {
-            window.location.href = "/admin";
-          } else if (userData.role === "driver") {
-            window.location.href = "/driver";
-          } else {
-            window.location.href = "/home";
-          }
+          if (userData.role === "admin") window.location.href = "/admin";
+          else if (userData.role === "driver") window.location.href = "/driver";
+          else window.location.href = "/home";
         } else {
-          console.error("Missing token or user data in response");
           setApiError(
             "Login successful but user data is missing. Please try again."
           );
         }
       }
     } catch (error) {
-      console.error("Auth error:", error);
       setApiError(
         error.response?.data?.message ||
           error.message ||
@@ -157,7 +135,6 @@ const Auth = () => {
     }
   };
 
-  /** החלפת מצב לוגין/הרשמה */
   const toggleMode = () => {
     setIsLogin(!isLogin);
     setErrors({});
@@ -201,7 +178,6 @@ const Auth = () => {
                 <span className={classes.errorText}>{errors.email}</span>
               )}
             </div>
-
             <div className={classes.formGroup}>
               <label htmlFor="phone">Phone</label>
               <input
@@ -216,7 +192,6 @@ const Auth = () => {
                 <span className={classes.errorText}>{errors.phone}</span>
               )}
             </div>
-
             <div className={classes.formGroup}>
               <label htmlFor="idNumber">ID Number</label>
               <input
@@ -231,7 +206,6 @@ const Auth = () => {
                 <span className={classes.errorText}>{errors.idNumber}</span>
               )}
             </div>
-
             <div className={classes.formGroup}>
               <label htmlFor="address">Address</label>
               <input
@@ -266,7 +240,6 @@ const Auth = () => {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className={classes.togglePassword}
-              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
             </button>
@@ -294,9 +267,6 @@ const Auth = () => {
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className={classes.togglePassword}
-                aria-label={
-                  showConfirmPassword ? "Hide password" : "Show password"
-                }
               >
                 <FontAwesomeIcon
                   icon={showConfirmPassword ? faEyeSlash : faEye}

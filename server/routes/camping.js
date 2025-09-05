@@ -255,4 +255,20 @@ router.post("/:id/images", async (req, res) => {
   }
 });
 
+router.get("/", async (req, res) => {
+  try {
+    const { is_recommended } = req.query;
+    let sql = "SELECT * FROM camping";
+    const where = [];
+    if (String(is_recommended) === "1") where.push("is_recommended = 1");
+    if (where.length) sql += " WHERE " + where.join(" AND ");
+    sql += " ORDER BY camping_location_name DESC";
+    const [rows] = await db.query(sql);
+    res.json(rows);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok: false, message: "Server error" });
+  }
+});
+
 module.exports = router;

@@ -195,7 +195,7 @@ const trips = {
     "bbq_area",
     "suitable_for_groups",
     "has_entry_fee",
-    "is_favorite",
+    "is_recommended",
   ],
   fields: [
     "trip_name",
@@ -226,7 +226,7 @@ const camping = {
     "night_camping",
     "suitable_for_groups",
     "has_entry_fee",
-    "is_favorite",
+    "is_recommended",
   ],
   fields: [
     "camping_location_name",
@@ -254,7 +254,7 @@ const attractions = {
     "suitable_for_groups",
     "has_entry_fee",
     "requires_reservation",
-    "is_favorite",
+    "is_recommended",
   ],
   fields: [
     "attraction_name",

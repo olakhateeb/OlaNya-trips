@@ -25,6 +25,7 @@ import AttractionDetails from "../pages/attractionDetails/AttractionDetails";
 import SearchPage from "../pages/search/SearchPage";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import DriverDashboard from "../pages/driver/DriverDashboard";
+import ScrollToTop from "../components/scrollToTop/ScrollToTop";
 
 /* ==== Helpers for role-based routing ==== */
 const getUser = () => {
@@ -42,12 +43,20 @@ const RoleLanding = () => <Navigate to="/home" replace />;
 /** לא מפנים מנהל/משתמש מתוך דפי הבית — כולם יכולים לראות את העמודים הכלליים */
 const HomeGate = ({ children }) => children;
 
-/** אם כבר מחובר—להפנות למסך לפי תפקיד במקום טפסי login/register */
+/** אם כבר מחובר—להפנות למסך לפי תפקיד; רק אם יש גם token וגם role */
 const AuthGate = ({ children }) => {
-  const role = getRole();
-  if (role === "admin") return <Navigate to="/admin" replace />;
-  if (role === "driver") return <Navigate to="/driver" replace />;
-  if (role) return <Navigate to="/home" replace />;
+  const userRaw = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
+  let role = null;
+  try {
+    role = JSON.parse(userRaw || "null")?.role || null;
+  } catch {}
+
+  if (token && role === "admin") return <Navigate to="/admin" replace />;
+  if (token && role === "driver") return <Navigate to="/driver" replace />;
+  if (token && role) return <Navigate to="/home" replace />;
+
+  // אין גם token וגם role => להציג את עמוד ה-Auth כרגיל
   return children;
 };
 
@@ -65,6 +74,9 @@ export default function App() {
     <div className={classes.appContainer}>
       <PayPalScriptProvider options={{ clientId: "YOUR_PAYPAL_CLIENT_ID" }}>
         <Header />
+
+        {/* 👇 גלילה לראש הדף על כל שינוי נתיב */}
+        <ScrollToTop />
 
         <main className={classes.mainContent}>
           <Routes>
@@ -111,7 +123,7 @@ export default function App() {
               path="/camping-detail/:camping_location_name"
               element={<CampingDetails />}
             />
-            <Route path="/attraction/:id" element={<AttractionDetails />} />
+            <Route path="/attractions/:id" element={<AttractionDetails />} />
             <Route path="/search" element={<SearchPage />} />
 
             {/* Surprise trip (זקוק ל־travelerId) */}

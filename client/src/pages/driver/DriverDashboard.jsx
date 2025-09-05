@@ -1,3 +1,4 @@
+// src/pages/driver/DriverDashboard.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -28,7 +29,6 @@ const DriverDashboard = () => {
   const token = localStorage.getItem("token");
   const authHeader = () => ({ headers: { Authorization: `Bearer ${token}` } });
 
-  // בדיקת הרשאות + טעינת פרופיל ראשונית
   useEffect(() => {
     const userRaw = localStorage.getItem("user");
     const user = userRaw ? JSON.parse(userRaw) : null;
@@ -36,16 +36,14 @@ const DriverDashboard = () => {
       navigate("/login");
       return;
     }
-    fetchDriverProfile(true); // טעינה ראשונית ללא קאש
+    fetchDriverProfile(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // טעינת נתונים לפי הטאב: פרופיל בפרופיל, טיולים ביתר הטאבים
   useEffect(() => {
     if (!token) return;
-
     if (activeTab === "profile") {
-      fetchDriverProfile(true); // cache-bust בכל מעבר לטאב פרופיל
+      fetchDriverProfile(true);
     } else if (activeTab === "upcoming" || activeTab === "history") {
       fetchTrips(activeTab);
     }
@@ -61,7 +59,6 @@ const DriverDashboard = () => {
     return err?.response?.data?.error || err?.message || fallback;
   };
 
-  // ⬅️ פרופיל: אם מגיע globalTotal מהשרת – נכניס אותו לתוך salary (בלי להציג שדה נוסף)
   const fetchDriverProfile = async (noCache = false) => {
     try {
       setLoading(true);
@@ -69,11 +66,10 @@ const DriverDashboard = () => {
         ...authHeader(),
         params: noCache ? { _t: Date.now() } : {},
       });
-
       const drv = data?.driver ? { ...data.driver } : {};
       const globalTotalNum = Number(drv.globalTotal);
       if (!Number.isNaN(globalTotalNum)) {
-        drv.salary = globalTotalNum; // משכורת = סה״כ כל ההזמנות (global)
+        drv.salary = globalTotalNum;
       }
       setProfile(drv);
       setError("");
@@ -97,10 +93,13 @@ const DriverDashboard = () => {
       const filtered = Array.isArray(data.trips)
         ? data.trips.filter((t) => {
             const st = (t.status || "").toLowerCase();
-            if (type === "upcoming") return st !== "completed";
+            if (type === "upcoming")
+              return st !== "completed" && st !== "cancelled";
             if (type === "history")
               return (
-                st === "completed" || new Date(t.departureTime) < new Date()
+                st === "completed" ||
+                st === "cancelled" ||
+                new Date(t.departureTime) < new Date()
               );
             return true;
           })
@@ -123,7 +122,6 @@ const DriverDashboard = () => {
         `${API_BASE}/driver/trips/export?type=${activeTab}`,
         { ...authHeader(), responseType: "arraybuffer" }
       );
-
       const contentType = res.headers["content-type"] || "";
       if (contentType.includes("application/json")) {
         const decoder = new TextDecoder("utf-8");
@@ -132,7 +130,6 @@ const DriverDashboard = () => {
         setError(json.error || json.message || "אירעה שגיאה ביצוא");
         return;
       }
-
       const blob = new Blob([res.data], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
@@ -157,13 +154,13 @@ const DriverDashboard = () => {
       setError("");
       setSuccess("");
 
-      await axios.put(
+      const { data } = await axios.put(
         `${API_BASE}/driver/order-status/${orderId}`,
         { status: newStatus },
         authHeader()
       );
 
-      if (newStatus === "completed") {
+      if (newStatus === "completed" || newStatus === "cancelled") {
         setActiveTab("history");
         await fetchTrips("history");
       } else {
@@ -171,10 +168,15 @@ const DriverDashboard = () => {
         await fetchTrips("upcoming");
       }
 
-      // ריענון פרופיל אחרי שינוי סטטוס כדי לעדכן “משכורת”
       await fetchDriverProfile(true);
 
-      setSuccess("הסטטוס עודכן בהצלחה");
+      if (data?.reassigned) {
+        setSuccess(`ההזמנה הועברה לנהג אחר: ${data.newDriver?.userName || ""}`);
+      } else if (newStatus === "declined" && data?.noDriverFound) {
+        setSuccess("ההזמנה הוסרה מהנהג ותישובץ ידנית (לא נמצא נהג חלופי).");
+      } else {
+        setSuccess("הסטטוס עודכן בהצלחה");
+      }
       setTimeout(() => setSuccess(""), 2500);
     } catch (err) {
       console.error("שגיאה בעדכון הסטטוס", err);
@@ -223,6 +225,10 @@ const DriverDashboard = () => {
         return "ממתין";
       case "completed":
         return "הושלם";
+      case "declined":
+        return "נדחה";
+      case "cancelled":
+        return "בוטל";
       default:
         return s || "-";
     }
@@ -338,7 +344,7 @@ const DriverDashboard = () => {
                 <td>{t.participants}</td>
                 <td>{formatCurrency(t.payment)}</td>
                 <td>{t.travelerName || "-"}</td>
-                <td>{formatPhone(t.travelerPhone)}</td>
+                <td>{t.travelerPhone}</td>
                 <td>
                   <span
                     className={`${styles.statusBadge} ${
@@ -362,6 +368,8 @@ const DriverDashboard = () => {
                     >
                       <option value="pending">ממתין</option>
                       <option value="completed">הושלם</option>
+                      <option value="declined">לדחות</option>
+                      <option value="cancelled">לבטל</option>
                     </select>
                   </td>
                 )}

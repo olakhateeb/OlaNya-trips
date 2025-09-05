@@ -1,3 +1,4 @@
+// AdminUsers.jsx
 import React, { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 
@@ -84,10 +85,10 @@ export default function AdminUsers() {
       setExpandedKey(null);
       return;
     }
-    
+
     // סגירת כל הכרטיסים האחרים לפני פתיחת כרטיס חדש
     setExpandedKey(null);
-    
+
     // טעינת פרטי המשתמש אם עוד לא נטענו
     if (idNumber && !detailsCache[idNumber]) {
       try {
@@ -102,7 +103,7 @@ export default function AdminUsers() {
         setLoadingDetails((m) => ({ ...m, [idNumber]: false }));
       }
     }
-    
+
     // פתיחת הכרטיס החדש
     setTimeout(() => {
       setExpandedKey(rowKey);

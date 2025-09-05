@@ -1,3 +1,4 @@
+// SurpriseTripView.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import styles from "./surpriseTrip.module.css";
