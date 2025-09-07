@@ -1,0 +1,67 @@
+/* עטיפה */
+.wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.wrap.md .btn {
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+}
+.wrap.sm .btn {
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+}
+
+/* כפתור עגול */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-size: 18px; /* גודל האייקון */
+  color: #333;
+  transition: box-shadow 0.2s ease, transform 0.15s ease, color 0.2s ease,
+    border-color 0.2s ease;
+}
+.btn:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* מצבי on */
+.heart.on {
+  border-color: #05e66e;
+  color: #05e66e;
+} /* לב ירוק */
+.star.on {
+  border-color: #f0c200;
+  color: #f0c200;
+} /* כוכב צהוב */
+
+/* טוסט */
+.toast {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 9999;
+}

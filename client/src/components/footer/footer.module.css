@@ -1,0 +1,204 @@
+.footer {
+  background-color: var(--color-section-bg);
+  color: #333;
+  padding: 3rem 2rem 1rem;
+  width: 100%;
+  margin-top: auto;
+  direction: rtl; /* ✅ RTL */
+  text-align: right; /* ✅ יישור טקסט לימין */
+}
+
+.footerContent {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 2rem;
+}
+
+.footerSection {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footerTitle {
+  color: #96c6c2;
+  font-size: 1.25rem;
+  margin-bottom: 1.25rem;
+  font-weight: 600;
+}
+
+.footerDescription {
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+/* ====== Social ====== */
+.socialLinks {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start; /* ב-RTL זה עדיין יעמוד מימין לשמאל */
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  color: #96c6c2;
+  transition: all 0.3s ease;
+  font-size: 1.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.socialIcon {
+  transition: transform 0.3s ease;
+}
+
+.socialLink:hover {
+  background-color: #96c6c2;
+  color: white;
+  transform: translateY(-3px);
+}
+
+.socialLink:hover .socialIcon {
+  transform: scale(1.1);
+}
+
+/* ====== Quick Links (אייקונים במקום טקסט) ====== */
+.footerLinks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex; /* כדי להציג אותם בשורה/רשת */
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+.footerLinks li {
+  margin: 0; /* אין צורך ב-margin אנכי */
+}
+
+.footerLink {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s, transform 0.3s, background-color 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.footerLink:hover {
+  color: white;
+  background-color: #96c6c2;
+  transform: translateY(-3px);
+}
+
+/* הטיית כיוון ה-hover לקישורי טקסט (אם תשולבנה בעתיד) */
+.footerLinkText:hover {
+  color: #96c6c2;
+  transform: translateX(-5px); /* ✅ RTL: זז שמאלה במקום ימינה */
+}
+
+/* ====== Contact ====== */
+.contactInfo p {
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+  justify-content: flex-end; /* מספרי טלפון/אימייל יפה בשורה מימין */
+}
+
+/* ====== Newsletter (אם תוסיפי בעתיד) ====== */
+.newsletterForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.newsletterInput {
+  padding: 0.75em;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 0.9rem;
+}
+
+.newsletterButton {
+  padding: 0.75em;
+  background-color: #96c6c2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.newsletterButton:hover {
+  background-color: #bfdcd9;
+}
+
+/* ====== Bottom ====== */
+.footerBottom {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* שומר ריווח נכון ב-RTL */
+  align-items: center;
+  gap: 1rem;
+}
+
+.copyright {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.footerBottomLinks {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footerBottomLink {
+  color: #555;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.footerBottomLink:hover {
+  color: #96c6c2;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 768px) {
+  .footerContent {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .footerSection {
+    width: 100%;
+  }
+
+  .footerBottom {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .contactInfo p {
+    justify-content: center;
+  }
+}

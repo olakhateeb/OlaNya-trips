@@ -1,0 +1,69 @@
+/* adminDashboard.module.css */
+
+/* ===== Layout ===== */
+.container {
+  direction: rtl;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Heebo", Arial, sans-serif;
+  color: #222;
+  text-align: center;
+}
+
+.title {
+  margin-bottom: 16px;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+/* ===== Tabs Bar ===== */
+.tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  justify-content: center; /* מרכז אופקית */
+}
+
+/* ===== Tab Button ===== */
+.tabBtn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-size: 15px;
+}
+
+.tabBtn:hover {
+  background: #f7f9fa;
+}
+
+.tabBtnActive {
+  border: 2px solid #96c6c2;
+  background: #f0fbfa;
+  font-weight: 700;
+}
+
+/* ===== Content Box ===== */
+.content {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 16px;
+  min-height: 400px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+/* אייקון בתוך הטאב */
+.tabIcon {
+  font-size: 18px;
+  margin-left: 6px; /* RTL: אייקון לפני הטקסט */
+}
+
+/* מוודא שהטקסט לא קופץ */
+.tabLabel {
+  line-height: 1;
+}

@@ -1,0 +1,463 @@
+/* =========================================================
+   Driver Dashboard – One CSS to rule them all
+   Base + Glassmorphism + Timeline + Dark Mode + Micro UX
+   ========================================================= */
+
+/* ====== TOKENS ====== */
+:root {
+  --color-bg-main: #ffffff;
+  --color-bg-box: #f9f9f9;
+  --color-accent: #96c6c2;
+  --color-accent-hover: #bfdcd9;
+  --color-text-main: #2e2e2e;
+  --color-text-subtle: #6b6b6b;
+  --color-border: #e3e3e3;
+  --color-section-bg: #f2f0ed;
+  --color-gradient-start: #96c6c2;
+  --color-gradient-end: #6a9e9a;
+
+  --color-error: #e74c3c;
+  --color-success: #2ecc71;
+  --color-warning: #f39c12;
+  --color-info: #3498db;
+
+  --color-pending: #f39c12;
+  --color-received: #3498db;
+  --color-completed: #2ecc71;
+  --color-cancelled: #e74c3c;
+}
+
+/* ====== ROOT WRAPPER ====== */
+.driverDashboard {
+  max-width: min(1400px, 96vw);
+  margin: 0 auto;
+  padding: 32px 24px;
+  direction: rtl;
+  font-family: "Rubik", sans-serif;
+
+  /* Glassmorphism background */
+  position: relative;
+  background: linear-gradient(180deg, #eef7f6, transparent 60%) no-repeat;
+}
+.driverDashboard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.2)
+    ),
+    url("") center/cover no-repeat; /* <-- שנה לנתיב שלך */
+  z-index: -1;
+  filter: saturate(1.04) contrast(1.02) brightness(1.02);
+}
+
+/* ====== HEADER (אופציונלי) ====== */
+.dashboardHeader {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.dashboardHeader h1 {
+  font-size: 2.2rem;
+  color: var(--color-text-main);
+  margin: 0 0 8px;
+}
+.dashboardHeader p {
+  color: var(--color-text-subtle);
+}
+
+/* ====== TABS (מותאם לקומפוננטה) ====== */
+.tabsContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.55);
+  border-radius: 12px;
+  border: 1px solid rgba(150, 198, 194, 0.35);
+  padding: 8px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+.tabsContainer > button {
+  padding: 12px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-subtle);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    transform 0.04s ease;
+}
+.tabsContainer > button:hover {
+  background: var(--color-accent-hover);
+  color: var(--color-text-main);
+}
+.activeTab {
+  color: var(--color-text-main) !important;
+  background: linear-gradient(
+    180deg,
+    #fff,
+    rgba(255, 255, 255, 0.7)
+  ) !important;
+  border-color: rgba(150, 198, 194, 0.8) !important;
+  box-shadow: 0 0 0 2px rgba(150, 198, 194, 0.15) inset;
+}
+
+/* ====== ALERTS ====== */
+.errorMessage,
+.successMessage {
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin: 16px 0;
+  text-align: center;
+}
+.errorMessage {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+.successMessage {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+.loadingMessage {
+  text-align: center;
+  padding: 30px;
+  color: var(--color-text-subtle);
+}
+
+/* ====== TABLE AREA ====== */
+.tabContent {
+  padding: 0;
+}
+
+/* Toolbar */
+.tableToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+}
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-main);
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.04s ease;
+}
+.exportBtn:hover {
+  background: var(--color-accent-hover);
+}
+.exportBtn:active {
+  transform: translateY(1px);
+}
+
+/* Card-like table container (glass) */
+.tableWrap {
+  overflow: auto;
+  border: 1px solid rgba(227, 227, 227, 0.7);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 15px;
+  direction: rtl;
+}
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(242, 240, 237, 0.9),
+    rgba(242, 240, 237, 0.6)
+  );
+  color: var(--color-text-main);
+  text-align: right;
+  padding: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+}
+.table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-main);
+  vertical-align: middle;
+  background: rgba(255, 255, 255, 0.9);
+  transition: background 0.15s ease;
+}
+.table tbody tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.96);
+}
+.table tbody tr:hover {
+  background: rgba(150, 198, 194, 0.1);
+}
+
+/* Timeline styling for first column + vertical connector */
+.table tbody tr {
+  position: relative;
+  transition: transform 0.06s ease;
+}
+.table tbody tr:active {
+  transform: scale(0.998);
+}
+.table tbody td:first-child {
+  position: relative;
+  padding-right: 28px; /* place for bullet */
+}
+.table tbody td:first-child::before {
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(150, 198, 194, 0.15);
+}
+.table tbody tr::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: calc(50% + 10px);
+  width: 2px;
+  bottom: -20px;
+  background: linear-gradient(180deg, rgba(150, 198, 194, 0.25), transparent);
+}
+
+/* Emphasize date column (3rd) */
+.table tbody td:nth-child(3) {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Sort icon */
+.sortIcon {
+  margin-inline-start: 6px;
+  opacity: 0.6;
+  font-size: 0.9em;
+}
+
+/* ====== STATUS BADGES ====== */
+.statusBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid transparent;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+.st_pending {
+  background: color-mix(in srgb, var(--color-pending) 12%, #fff);
+  color: var(--color-pending);
+  border-color: color-mix(in srgb, var(--color-pending) 30%, #fff);
+}
+.st_received {
+  background: color-mix(in srgb, var(--color-received) 12%, #fff);
+  color: var(--color-received);
+  border-color: color-mix(in srgb, var(--color-received) 30%, #fff);
+}
+.st_completed {
+  background: color-mix(in srgb, var(--color-completed) 12%, #fff);
+  color: var(--color-completed);
+  border-color: color-mix(in srgb, var(--color-completed) 30%, #fff);
+}
+.st_cancelled {
+  background: color-mix(in srgb, var(--color-cancelled) 12%, #fff);
+  color: var(--color-cancelled);
+  border-color: color-mix(in srgb, var(--color-cancelled) 30%, #fff);
+}
+
+/* Micro-interaction: pulse when updated */
+@keyframes statusPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+  }
+  35% {
+    box-shadow: 0 0 0 8px rgba(46, 204, 113, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+  }
+}
+.statusBadge.updated {
+  animation: statusPulse 0.8s ease-out;
+}
+
+/* ====== STATUS SELECT ====== */
+.statusSelect {
+  appearance: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-main);
+  color: var(--color-text-main);
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 130px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.statusSelect:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(150, 198, 194, 0.2);
+}
+
+/* ====== OPTIONAL COLUMN HELPERS ====== */
+.colIdx {
+  width: 56px;
+  text-align: center;
+  white-space: nowrap;
+}
+.colNum {
+  text-align: center;
+  width: 90px;
+}
+.colPhone {
+  white-space: nowrap;
+  min-width: 160px;
+}
+.colStatus {
+  text-align: center;
+  width: 140px;
+}
+.colPayment {
+  text-align: center;
+  width: 150px;
+  white-space: nowrap;
+}
+.ellipsis {
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ====== PROFILE CARD (לטאב הפרופיל) ====== */
+.profile {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg-main);
+  padding: 16px;
+}
+.profile h3 {
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-main);
+}
+.profileGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+}
+.profileGrid > div {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-box);
+  color: var(--color-text-main);
+}
+
+/* ====== DARK MODE (הפעל ע"י className משולב: styles.driverDashboard + ' ' + styles.dark) ====== */
+.dark {
+  --color-bg-main: #111418;
+  --color-bg-box: #171b21;
+  --color-text-main: #e9eef5;
+  --color-text-subtle: #98a1ab;
+  --color-border: #2a3038;
+  --color-section-bg: #1b2027;
+  --color-accent: #7fd2cc;
+  --color-accent-hover: #294247;
+  --color-pending: #f5b544;
+  --color-received: #58a6ff;
+  --color-completed: #42d392;
+  --color-cancelled: #ff6b6b;
+  background: #0e1216;
+}
+.dark .tabsContainer,
+.dark .tableWrap {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  background-color: rgba(21, 26, 33, 0.6);
+}
+.dark .tabsContainer > button {
+  background: #151a21;
+  color: var(--color-text-subtle);
+}
+.dark .tabsContainer > button:hover {
+  background: #1a2028;
+  color: var(--color-text-main);
+}
+.dark .activeTab {
+  background: #1a2028 !important;
+  border-color: var(--color-accent) !important;
+}
+.dark .table thead th {
+  background: #131820;
+  border-color: #222a34;
+}
+.dark .table tbody td {
+  background: #10151c;
+  border-color: #222a34;
+}
+.dark .table tbody tr:hover {
+  background: #141b24;
+}
+.dark .exportBtn {
+  background: #151a21;
+  color: #e9eef5;
+  border-color: #2a3038;
+}
+.dark .profile {
+  background: #12171d;
+}
+.dark .profileGrid > div {
+  background: #151b23;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .tabsContainer {
+    grid-template-columns: 1fr;
+  }
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+  .table {
+    font-size: 14px;
+  }
+}
+@media (max-width: 576px) {
+  .table {
+    font-size: 13.5px;
+  }
+}

@@ -1,0 +1,456 @@
+/* Main Container */
+.contactContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+/* Hero Section */
+.heroSection {
+  background: linear-gradient(135deg, #96c6c2, #bfdcd9);
+  color: white;
+  text-align: center;
+  padding: 5rem 2rem;
+  margin-bottom: 3rem;
+}
+
+.heroSection h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.heroSection p {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+/* Content Wrapper */
+.contentWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+
+/* About Section */
+.aboutSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  margin-bottom: 5rem;
+  align-items: center;
+}
+
+.teamImage {
+  flex: 1;
+  min-width: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  aspect-ratio: 4/3;
+  background-color: #f1f5f9;
+}
+
+.teamPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.teamImage:hover .teamPhoto {
+  transform: scale(1.03);
+}
+
+.teamImage:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.aboutText {
+  flex: 2;
+  min-width: 300px;
+  direction: rtl;
+  text-align: right;
+}
+
+.aboutText h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+  position: relative;
+  display: inline-block;
+  text-align: right;
+}
+
+.aboutText h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  right: 0;
+  left: auto;
+  width: 60px;
+  height: 4px;
+  background: #96c6c2;
+  border-radius: 2px;
+}
+
+.aboutText p {
+  line-height: 1.8;
+  color: #475569;
+  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+}
+
+/* Contact Section */
+.contactSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  direction: rtl;
+}
+
+.contactInfo {
+  flex: 1;
+  min-width: 300px;
+  padding: 3rem;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  text-align: right;
+}
+
+.contactInfo h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+.contactInfo > p {
+  color: #64748b;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.contactDetails {
+  margin: 2.5rem 0;
+}
+
+.contactItem {
+  display: grid;
+  grid-template-columns: 1fr auto; /* text column, then icon (RTL keeps icon visually on the right) */
+  column-gap: 1rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.contactIcon {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #96c6c2;
+  /* place icon in the second grid column (right side in RTL) */
+  grid-column: 2;
+  margin: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  font-size: 1rem;
+}
+
+.contactIcon svg {
+  width: 1em;
+  height: 1em;
+}
+
+.contactItem span {
+  color: #475569;
+  font-size: 0.95rem;
+  display: block;
+  /* place all spans in the first grid column (left of icon in RTL) */
+  grid-column: 1;
+}
+
+.contactItem span + span {
+  margin-top: 0.25rem;
+}
+
+.socialMedia {
+  margin-top: 2.5rem;
+}
+
+.socialMedia h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.socialIcons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  color: #96c6c2;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  font-size: 1.1rem;
+}
+
+.socialIcons svg {
+  width: 1em;
+  height: 1em;
+}
+
+.socialIcons a:hover {
+  background: #96c6c2;
+  color: white;
+  transform: translateY(-3px);
+}
+
+/* Contact Form */
+.contactForm {
+  flex: 1.5;
+  min-width: 300px;
+  padding: 3rem;
+  text-align: right;
+}
+
+.contactForm h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  color: #1e293b;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #334155;
+  text-align: right;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #f8fafc;
+  text-align: right;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #96c6c2;
+  box-shadow: 0 0 0 3px rgba(150, 198, 194, 0.2);
+  background-color: white;
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #96c6c2, #bfdcd9);
+  color: white;
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 15px rgba(150, 198, 194, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.buttonIcon {
+  font-size: 1rem;
+}
+
+.buttonIcon svg {
+  width: 1em;
+  height: 1em;
+}
+
+.submitButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(150, 198, 194, 0.4);
+}
+
+.submitButton:disabled {
+  background: #cbd5e1;
+  transform: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Success Message */
+.successMessage {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.successIcon {
+  font-size: 3.5rem;
+  color: #10b981;
+  margin-bottom: 1rem;
+}
+
+.successIcon svg {
+  width: 1em;
+  height: 1em;
+}
+
+.successMessage p {
+  font-size: 1.1rem;
+  color: #334155;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.backButton {
+  background: none;
+  border: 2px solid #4a90e2;
+  color: #4a90e2;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.backButton:hover {
+  background-color: #f0f7ff;
+}
+
+/* Error Message */
+.errorMessage {
+  color: #ef4444;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* Responsive Design */
+/* Form Group Focus State */
+.formGroup:focus-within label {
+  color: #4a90e2;
+}
+
+/* Error State */
+.formGroup.error input,
+.formGroup.error textarea {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.formGroup .errorText {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+  display: block;
+}
+
+/* Success State */
+.formGroup.success input,
+.formGroup.success textarea {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+@media (max-width: 768px) {
+  .heroSection {
+    padding: 4rem 1.5rem;
+  }
+  
+  .heroSection h1 {
+    font-size: 2rem;
+  }
+  
+  .contentWrapper {
+    padding: 0 1.5rem 3rem;
+  }
+  
+  .aboutSection, 
+  .contactSection {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .teamImage,
+  .aboutText,
+  .contactInfo,
+  .contactForm {
+    min-width: 100%;
+  }
+  
+  .contactInfo,
+  .contactForm {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.contactForm,
+.contactInfo {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.contactForm {
+  animation-delay: 0.1s;
+}
+
+/* Loading State */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Loading Spinner */
+.submitButton:disabled::after {
+  content: '';
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  margin-left: 0.5rem;
+  animation: spin 0.8s linear infinite;
+}
