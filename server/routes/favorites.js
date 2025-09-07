@@ -4,7 +4,7 @@ const router = express.Router();
 const db = require("../db");
 const jwt = require("jsonwebtoken");
 
-/* ==== Auth helper ==== */
+// ==== Auth helper ====
 const localVerifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization || "";
   if (!authHeader.startsWith("Bearer ")) {
@@ -16,7 +16,7 @@ const localVerifyToken = (req, res, next) => {
       token,
       process.env.JWT_SECRET || "your_jwt_secret"
     );
-    req.user = decoded?.user || decoded; // תואם למבנה שלך
+    req.user = decoded?.user || decoded;
     next();
   } catch {
     return res.status(401).json({ ok: false, message: "Invalid token" });
@@ -26,7 +26,7 @@ const localVerifyToken = (req, res, next) => {
 const getUserId = (req) =>
   req?.user?.idNumber || req?.user?.id || req?.user?.userId || null;
 
-/* Helper: נרמול טיפוס הפריט (סינגולרי ולוואר-קייס) */
+// סינגולר ולוואר-קייס
 const normalizeItemType = (t = "") => {
   const k = String(t || "")
     .trim()
@@ -37,43 +37,64 @@ const normalizeItemType = (t = "") => {
   return k; // trip | camping | attraction
 };
 
+// ===== NEW: נרמול itemId (מפתח) – כולל Unicode NFC, רווחים כפולים, טרימינג
+const normalizeKey = (raw = "") => {
+  let s = String(raw ?? "").normalize("NFC"); // מאחד גרסאות Unicode (עברית/סימנים)
+  s = s.replace(/\s+/g, " "); // מצמצם רווחים כפולים
+  s = s.trim();
+  return s;
+};
+
 /* =========================
    הוספה/הסרה של מועדף
    ========================= */
-// on=true => להוסיף, on=false => למחוק
 router.post("/", localVerifyToken, async (req, res) => {
   try {
     const userId = getUserId(req);
     let { itemType, itemId, on } = req.body;
 
+    itemType = normalizeItemType(itemType);
+    const itemKey = normalizeKey(itemId);
+
+    console.log(
+      "[FAV POST] userId=%s type=%s key='%s' len=%d on=%s",
+      userId,
+      itemType,
+      itemKey,
+      itemKey.length,
+      on
+    );
+
     if (!userId || typeof on === "undefined") {
       return res.status(400).json({ ok: false, message: "Missing params" });
     }
-
-    itemType = normalizeItemType(itemType);
     if (!["trip", "camping", "attraction"].includes(itemType)) {
       return res.status(400).json({ ok: false, message: "Bad itemType" });
     }
-
-    // מזהה נשמר תמיד כמחרוזת (תומך גם ב־VARCHAR כמו camping_location_name)
-    const itemKey = String(itemId ?? "").trim();
     if (!itemKey) {
       return res.status(400).json({ ok: false, message: "Bad itemId" });
     }
 
     if (on) {
-      await db.query(
+      const [r] = await db.query(
         "INSERT IGNORE INTO favorites (user_id, item_type, item_id) VALUES (?,?,?)",
         [userId, itemType, itemKey]
       );
+      console.log("[FAV POST] INSERT IGNORE:", r);
     } else {
-      await db.query(
+      const [r] = await db.query(
         "DELETE FROM favorites WHERE user_id=? AND item_type=? AND item_id=?",
         [userId, itemType, itemKey]
       );
+      console.log("[FAV POST] DELETE:", r);
     }
 
-    return res.json({ ok: true });
+    // בדיקת מצב בפועל אחרי הפעולה (מחזירים ללקוח)
+    const [rows] = await db.query(
+      "SELECT 1 FROM favorites WHERE user_id=? AND item_type=? AND item_id=? LIMIT 1",
+      [userId, itemType, itemKey]
+    );
+    return res.json({ ok: true, isFavorite: rows.length > 0 });
   } catch (e) {
     console.error("POST /api/favorites error:", e);
     return res.status(500).json({ ok: false, message: "Server error" });
@@ -88,16 +109,23 @@ router.get("/check", localVerifyToken, async (req, res) => {
     const userId = getUserId(req);
     let { itemType, itemId } = req.query;
 
+    itemType = normalizeItemType(itemType);
+    const itemKey = normalizeKey(itemId);
+
+    console.log(
+      "[FAV CHECK] userId=%s type=%s key='%s' len=%d",
+      userId,
+      itemType,
+      itemKey,
+      itemKey.length
+    );
+
     if (!userId) {
       return res.status(400).json({ ok: false, message: "Missing user" });
     }
-
-    itemType = normalizeItemType(itemType);
     if (!["trip", "camping", "attraction"].includes(itemType)) {
       return res.status(400).json({ ok: false, message: "Bad itemType" });
     }
-
-    const itemKey = String(itemId ?? "").trim();
     if (!itemKey) {
       return res.status(400).json({ ok: false, message: "Bad itemId" });
     }
